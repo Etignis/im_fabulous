@@ -20,3 +20,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		})	
 	}
 });
+
+var s=false;
+if(s==true){
+	chrome.runtime.requestUpdateCheck(function (request, sender, sendResponse) {
+		debugger;
+	});
+}
+
+chrome.runtime.onUpdateAvailable.addListener(function (request, sender, sendResponse) {
+	debugger;
+});
