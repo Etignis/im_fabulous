@@ -69,3 +69,5 @@ function setGlobalCss(sStyle) {
 		document.head.appendChild(sNewCss);
 	}
 }
+
+alert(2);
