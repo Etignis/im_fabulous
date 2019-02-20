@@ -70,4 +70,4 @@ function setGlobalCss(sStyle) {
 	}
 }
 
-alert(2);
+//alert(2);

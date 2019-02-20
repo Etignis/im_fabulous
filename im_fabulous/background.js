@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 var s=false;
 if(s==true){
-	chrome.runtime.requestUpdateCheck(function (request, sender, sendResponse) {
+	chrome.runtime.requestUpdateCheck(function (status, details) {
 		debugger;
 	});
 }
