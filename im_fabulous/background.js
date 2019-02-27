@@ -19,6 +19,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentResult", val: request.bHideCommentResult});
 		})	
 	}
+	if(request.bHideCommentSidebar != undefined) {		
+		chrome.storage.sync.set({'bHideCommentSidebar': request.bHideCommentSidebar}, function() {
+      //alert(request.bHideCommentResult);
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentSidebar", val: request.bHideCommentSidebar});
+		})	
+	}
 });
 
 var s=false;
