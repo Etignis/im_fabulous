@@ -29,6 +29,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentSidebar", val: request.bHideCommentSidebar});
 		})	
 	}
+	if(request.bShowCommentsTree != undefined) {		
+		chrome.storage.sync.set({'bShowCommentsTree': request.bShowCommentsTree}, function() {
+      //alert(request.bHideCommentResult);
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bShowCommentsTree", val: request.bShowCommentsTree});
+		})	
+	}
+	if(request.bHideCommentLeftPadding != undefined) {		
+		chrome.storage.sync.set({'bHideCommentLeftPadding': request.bHideCommentLeftPadding}, function() {
+      //alert(request.bHideCommentResult);
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentLeftPadding", val: request.bHideCommentLeftPadding});
+		})	
+	}
 });
 
 var s=false;
