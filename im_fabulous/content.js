@@ -21,7 +21,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 48.08%, #f0f6fa 48.08%, #f0f6fa 50%, #ffffff 50%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%); background-size: 104.00px 104.00px;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} .comment{max-width: 700px}"
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} .comment{max-width: 700px} .commentBefore:before{content: '';    display: block;    width: 1em;    height: 5em;     background: red;     position: absolute;     bottom: -20px;}"
 	}	
 };
 var oTimer;
@@ -320,18 +320,23 @@ function setCommentsTree(){
 									console.log(document.getElementById(sRootId).parentNode.getAttribute('id'));
 									console.log(oCurrentNode.parentNode.getAttribute('id'));
 									
+									// commentBefore
+									//document.getElementById(sRootId).classList.add("commentBefore");
 									//aComments[k].parentNode.style.backgroundColor = "#edf4fe";
 									aComments[k].parentNode.classList.add("backgroundCommentGap");
-									backgroundCommentGap
+									//backgroundCommentGap
 									const style = getComputedStyle(document.getElementById(sRootId));
 									
-									var nPadding = style['padding-left'].replace(/[^\d]/g,"") ;//aComments[k].parentNode.style.paddingLeft.replace(/[^\d]/g,"");
+									//var nPadding = style['padding-left'].replace(/[^\d]/g,"") ;//aComments[k].parentNode.style.paddingLeft.replace(/[^\d]/g,"");
+									var nPadding = 1;
+									//var nTranslate = style['padding-left'].replace(/[^\d]/g,"") ;//aComments[k].parentNode.style.paddingLeft.replace(/[^\d]/g,"");
 									if(oComData[sRootId]) {
 										nPadding = oComData[sRootId];
 									}
-									var nNewPadding = Number(nPadding)+10;
+									var nNewPadding = nPadding+1;
 									oComData[aComments[k].parentNode.getAttribute('id')] = nNewPadding;
-									aComments[k].parentNode.style.paddingLeft = nNewPadding+"px";
+									aComments[k].parentNode.style.paddingLeft = (nNewPadding * 10)+"px";
+									//aComments[k].parentNode.style.transform = "translate("+nNewPadding+"px)";
 								}
 							}
 						}
