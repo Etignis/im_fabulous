@@ -21,10 +21,17 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 48.08%, #f0f6fa 48.08%, #f0f6fa 50%, #ffffff 50%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%); background-size: 104.00px 104.00px;}"
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 48.08%, #f0f6fa 48.08%, #f0f6fa 50%, #ffffff 50%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%); background-size: 104.00px 104.00px;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} .comment{max-width: 700px}"
 	}	
 };
 var oTimer;
+var oLocalParameters = {
+	bScroolActive: false
+};
+
+document.addEventListener("DOMContentLoaded", function(){oLocalParameters.DOMLoaded = true});
+//document.addEventListener("onload ", );
+window.onload = function(){oLocalParameters.Loaded = true; minimiseLeftPadding();}
 	
 	
 function implementSettings(oSettings){
@@ -51,6 +58,7 @@ function implementSettings(oSettings){
 	}
 }	
 implementSettings(0);
+startStalkScroll(true);
 var oSettingsPropmise = new Promise (function(resolve, reject){
 	chrome.storage.sync.get([
 		'bHideCommentPlus', 
@@ -112,55 +120,173 @@ function setGlobalCss(sStyle) {
 
 
 var isInViewport = function (elem) {
-    var bounding = elem.getBoundingClientRect();
-    return (
-        bounding.top <= window.innerHeight-200
-    );
+	if(!elem) {
+		return false;
+	}
+	if(elem.length && elem.length>0) {
+		elem = elem[0];
+	}
+	try{
+		var bounding = elem.getBoundingClientRect();
+		return (
+				bounding.top <= window.innerHeight-200
+		);
+	} catch (err) {
+		console.dir(err);
+		console.dir(elem);
+	}
 }
 var isAboveViewport = function (elem) {
-    var bounding = elem.getBoundingClientRect();
-    return (
-        bounding.top <= -90
-    );
+	var bounding = elem.getBoundingClientRect();
+	return (
+			bounding.top <= -90
+	);
 };
 
-function startStalkScroll() {
-	var oComments = document.getElementById("comments");
+function startStalkScroll(bForce) {
+	/*var oComments = document.getElementById("comments");
 	var oCommentWrappers = document.getElementsByClassName("comment-wrapper");
-	var oSidebar = document.getElementById("sidebar");
+	var oSidebar = document.getElementById("sidebar");*/
 	var oContent = document.getElementById("content");
 	oContent.classList.add("sideTransition");
-	window.onscroll = function() {
+	
+	window.onscroll = scrollReaction;
+	if(bForce) {
+		scrollReaction();
+	}
+}
+function scrollReaction() {
 		clearTimeout(oTimer);
-		oTimer = setTimeout(function(){
-			if(isInViewport(oComments)) {
-				oSidebar.style.display = "none";
-				//oContent.style.marginRight = "0";
-				oContent.classList.add("sideHidden");
-			} else {
-				oSidebar.style.display = "block";	
-				//oContent.style.marginRight = "";	
-				oContent.classList.remove("sideHidden");	
-			}
-			for(let i=0; i<oCommentWrappers.length; i++){
-				if(isAboveViewport(oCommentWrappers[i])) {
-					if(oCommentWrappers[i].className.indexOf("hideCommentLeftPadding")<0) {
-						const style = getComputedStyle(oCommentWrappers[i]);
-						if(style['padding-left'].replace(/[^\d]/g,"")>10){
-							oCommentWrappers[i].classList.add("hideCommentLeftPadding");
+		if(oLocalParameters.bScroolActive) {
+			oLocalParameters.bScroolActive = false;
+		} else {
+			oTimer = setTimeout(function(){
+				var oComments = document.getElementById("comments");
+				var oSidebar = document.getElementById("sidebar");
+				var oContent = document.getElementById("content");
+				
+				if(isInViewport(oComments)) {
+					oSidebar.style.display = "none";
+					//oContent.style.marginRight = "0";
+					if(oContent.classList)
+						oContent.classList.add("sideHidden");
+				} else {
+					oSidebar.style.display = "block";	
+					//oContent.style.marginRight = "";	
+					if(oContent.classList)
+						oContent.classList.remove("sideHidden");	
+				}
+				
+				minimiseLeftPadding();
+				setTimeout(function(){
+					// focus on current comment
+					var oCurrCom = document.querySelector(".comment-current");
+					var sHash = location.hash;
+					var sId;
+					
+					if(oCurrCom) {
+						var sElementId = oCurrCom.getAttribute("id");
+						var oId = sElementId.match(/comment_id_(\d+)/);
+						if(oId && oId[1]) {
+							sId = oId[1];
 						}
 					}
-				} else {
-					if(oCommentWrappers[i].className.indexOf("hideCommentLeftPadding")>-1)
-						oCommentWrappers[i].classList.remove("hideCommentLeftPadding");					
-				}
-			}
-			clearTimeout(oTimer);
-		}, 100);
-		
+					if(sHash) {
+						var oHash = sHash.match(/comment(\d+)/);
+						if(oHash && oHash[1] /*&& oHash[1] != oLocalParameters.sHashComment*/) {
+							sId = oHash[1];
+							//oLocalParameters.sHashComment = sId
+							//location.hash = "";
+						}
+					}
+					
+					if(sId /*&& sId != oLocalParameters.sHashComment*/ && oLocalParameters.bScroolActive == false) {
+						oLocalParameters.bScroolActive = true;
+						scrollToComment(sId);
+					}
+				}, 1500);
+				
+				
+				clearTimeout(oTimer);
+			}, 100);
+		}
 		
 		// oCommentWrappers
+}
+
+function minimiseLeftPadding() {
+	if(!oLocalParameters.Loaded)
+		return;
+	try{
+		var oCommentWrappers = document.getElementsByClassName("comment-wrapper");
+		let nPad = 0;
+					
+		for(let i=0; i<oCommentWrappers.length; i++){
+			if(isAboveViewport(oCommentWrappers[i])) {
+				if(oCommentWrappers[i].className.indexOf("hideCommentLeftPadding")<0) {
+					const style = getComputedStyle(oCommentWrappers[i]);
+					if(style['padding-left'].replace(/[^\d]/g,"")>10){
+						oCommentWrappers[i].classList.add("hideCommentLeftPadding");
+						nPad++;
+					}
+				}
+			} else {
+				if(oCommentWrappers[i].className.indexOf("hideCommentLeftPadding")>-1)
+					oCommentWrappers[i].classList.remove("hideCommentLeftPadding");					
+			}
+		}
+		console.log("nPad: "+nPad);
+		oLocalParameters.bScroolActive = true;
+	} catch(err){
+		
 	}
+}
+
+	
+// Прокрутка к комментарию
+function scrollToComment (idComment) {
+	if(!oLocalParameters.Loaded || oLocalParameters.sHashComment == idComment)
+		return;
+	
+	oLocalParameters.sHashComment = idComment;
+	
+		var element = document.querySelector('#comment_id_' + idComment);
+		try{
+			var aCurrs = document.getElementsByClassName("comment-current");
+			for(let i=0; i<aCurrs.length; i++) {
+				aCurrs[i].classList.remove("comment-cur");
+			}
+		} catch (err) {
+			
+		}
+		element.classList.add("comment-cur");
+		var offset = getCoords(element).top; //$(element).offset().top;
+		console.log('Scroll to comment: ', element, offset);
+
+		//$.scrollTo('#comment_id_' + idComment, 1000, {offset: -250});
+		
+		window.scrollTo({
+			top: offset-150/*,
+			behavior: "smooth"*/
+		});
+		oLocalParameters.bScroolActive = false;
+		
+/*/
+		if (this.iCurrentViewComment) {
+				$('#comment_id_' + this.iCurrentViewComment).removeClass(this.options.classes.comment_current);
+		}
+		$('#comment_id_' + idComment).addClass(this.options.classes.comment_current);
+		this.iCurrentViewComment = idComment;
+		/**/
+};
+function getCoords(elem) { // кроме IE8-
+  var box = elem.getBoundingClientRect();
+
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+
 }
 
 function setCommentsTree(){
