@@ -3,10 +3,19 @@ var oLocalSettings = {
 		val: true,
 		css: ".comment-wrapper .vote-up{display: none !important;}"
 	},
+	bHideCommentMinus: {
+		val: true,
+		css: ".comment-wrapper .vote-down{display: none !important;}"
+	},
 	
 	bHideCommentResult: {
 		val: true,
 		css: ".comment-wrapper .vote-count{display: none !important;}"
+	},
+	
+	bHideCommentNegative: {
+		val: true,
+		css: ""
 	},
 	
 	bHideCommentSidebar: {
@@ -52,16 +61,29 @@ function implementSettings(oSettings){
 		startStalkScroll();
 	}
 	
-	if(oLocalSettings.bShowCommentsTree.val && oSettings!=0) {
-		// tree comments
-		setCommentsTree();
+	if(oSettings!=0) {
+		if(oLocalSettings.bShowCommentsTree.val) {
+			// tree comments
+			setCommentsTree();
+		}
+		
+		if(oLocalSettings.bHideCommentNegative.val) {
+			// hide negative
+			setVoteCounterHandler();
+		} else {
+			setVoteCounterHandler(false);
+		}
 	}
+	
+	
 }	
 implementSettings(0);
 startStalkScroll(true);
 var oSettingsPropmise = new Promise (function(resolve, reject){
 	chrome.storage.sync.get([
 		'bHideCommentPlus', 
+		'bHideCommentMinus',
+		'bHideCommentNegative', 
 		'bHideCommentResult', 
 		'bHideCommentSidebar', 
 		'bShowCommentsTree', 
@@ -70,6 +92,8 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 		console.log('settings: ');
 		console.dir(result);
 		oLocalSettings.bHideCommentPlus.val = result.bHideCommentPlus || false;
+		oLocalSettings.bHideCommentMinus.val = result.bHideCommentMinus || false;
+		oLocalSettings.bHideCommentNegative.val = result.bHideCommentNegative || false;
 		oLocalSettings.bHideCommentResult.val = result.bHideCommentResult || false;
 		oLocalSettings.bHideCommentSidebar.val = result.bHideCommentSidebar || false;
 		oLocalSettings.bShowCommentsTree.val = result.bShowCommentsTree || false;
@@ -86,8 +110,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			case "bHideCommentPlus":
 				implementSettings({bHideCommentPlus: {val: request.val}});
 				break;
+			case "bHideCommentMinus":
+				implementSettings({bHideCommentMinus: {val: request.val}});
+				break;
 			case "bHideCommentResult":
 				implementSettings({bHideCommentResult: {val: request.val}});
+				break;
+			case "bHideCommentNegative":
+				implementSettings({bHideCommentNegative: {val: request.val}});
 				break;
 			case "bHideCommentSidebar":
 				implementSettings({bHideCommentSidebar: {val: request.val}});
@@ -353,4 +383,54 @@ function setCommentsTree(){
 
 }
 
-//alert(2);
+///////////////////////////////
+// votes update handler
+
+function setVoteCounterHandler(bActive){
+	var aCounters = document.getElementsByClassName("comment-wrapper");
+	var config = { attributes: true, childList: true, subtree: true };
+	
+	for (let i=0; i<aCounters.length; i++) {
+		// Create an observer instance linked to the callback function
+		var observer = new MutationObserver(handleVoteCount);
+
+		// Start observing the target node for configured mutations
+		if(bActive != undefined && bActive == false) {
+			observer.disconnect();
+		} else {
+			observer.observe(aCounters[i], config);
+			processVoteCount(aCounters[i]);
+		}
+	}
+}
+
+function handleVoteCount(mutationsList, observer){
+	var aSelectors = [];
+	for(var mutation of mutationsList) {
+		if (mutation.type == 'childList') {
+				//console.log('A child node has been added or removed.');
+				for (let j=0; j<mutationsList.length; j++) {
+					var oElem = mutationsList[j].target;
+					var id = oElem.getAttribute("id");
+					if(aSelectors.indexOf(id)<0) {
+						aSelectors.push(id);
+						processVoteCount(oElem);
+					}
+				}
+		}
+		else if (mutation.type == 'attributes') {
+				//console.log('The ' + mutation.attributeName + ' attribute was modified.');
+		}
+	}
+}
+
+function processVoteCount(oElem){
+	var sId = oElem.getAttribute("id");
+	var oEl = document.querySelector("#"+sId+" .vote-count a") || document.querySelector("#"+sId+" .vote-count");
+	if(oEl) {
+		var sText = oEl.textContent;
+		if(Number(sText)<0) {
+			oEl.textContent = 0;
+		}
+	}
+}

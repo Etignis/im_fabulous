@@ -1,5 +1,5 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	//alert("got message");
+	// hide Plus button
 	if(request.bHideCommentPlus != undefined) {		
 		chrome.storage.sync.set({'bHideCommentPlus': request.bHideCommentPlus}, function() {
     });
@@ -9,6 +9,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentPlus", val: request.bHideCommentPlus});
 		})			
 	}
+	
+	// hide Minus button
+	if(request.bHideCommentMinus != undefined) {		
+		chrome.storage.sync.set({'bHideCommentMinus': request.bHideCommentMinus}, function() {
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentMinus", val: request.bHideCommentMinus});
+		})			
+	}
+	
+	// hide Negative
+	if(request.bHideCommentNegative != undefined) {		
+		chrome.storage.sync.set({'bHideCommentNegative': request.bHideCommentNegative}, function() {
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentNegative", val: request.bHideCommentNegative});
+		})			
+	}
+	
+	// hide Result
 	if(request.bHideCommentResult != undefined) {		
 		chrome.storage.sync.set({'bHideCommentResult': request.bHideCommentResult}, function() {
       //alert(request.bHideCommentResult);
@@ -19,6 +43,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentResult", val: request.bHideCommentResult});
 		})	
 	}
+	
+	// hie Sidebar
 	if(request.bHideCommentSidebar != undefined) {		
 		chrome.storage.sync.set({'bHideCommentSidebar': request.bHideCommentSidebar}, function() {
       //alert(request.bHideCommentResult);
@@ -29,6 +55,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentSidebar", val: request.bHideCommentSidebar});
 		})	
 	}
+	
+	// show Tree
 	if(request.bShowCommentsTree != undefined) {		
 		chrome.storage.sync.set({'bShowCommentsTree': request.bShowCommentsTree}, function() {
       //alert(request.bHideCommentResult);
@@ -39,6 +67,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			chrome.tabs.sendMessage(oTab.id, {src: "bShowCommentsTree", val: request.bShowCommentsTree});
 		})	
 	}
+	
+	// hide padding Left
 	if(request.bHideCommentLeftPadding != undefined) {		
 		chrome.storage.sync.set({'bHideCommentLeftPadding': request.bHideCommentLeftPadding}, function() {
       //alert(request.bHideCommentResult);
