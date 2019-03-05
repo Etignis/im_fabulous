@@ -30,8 +30,23 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} .comment{max-width: 700px} .commentBefore:before{content: '';    display: block;    width: 1em;    height: 5em;     background: red;     position: absolute;     bottom: -20px;}"
-	}	
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} "
+	}	,
+	
+	bHidePostMinus: {
+		val: true,
+		css: ".vote-topic .vote-item.vote-down{display: none !important;}"
+	},	
+	
+	bHidePostNegative: {
+		val: true,
+		css: ""
+	},
+	
+	bCommentWidth: {
+		val: false,
+		css: ".comment{max-width: 700px}"
+	}
 };
 var oTimer;
 var oLocalParameters = {
@@ -73,6 +88,13 @@ function implementSettings(oSettings){
 		} else {
 			setVoteCounterHandler(false);
 		}
+		
+		if(oLocalSettings.bHidePostNegative.val) {
+			// hide negative
+			setPostVoteCounterHandler();
+		} else {
+			setPostVoteCounterHandler(false);
+		}
 	}
 	
 	
@@ -80,24 +102,37 @@ function implementSettings(oSettings){
 implementSettings(0);
 startStalkScroll(true);
 var oSettingsPropmise = new Promise (function(resolve, reject){
-	chrome.storage.sync.get([
+	var aNames = [];
+	for (let key in oLocalSettings) {
+		aNames.push(key)
+	}
+	//oLocalSettings.map(el => el.)
+	chrome.storage.sync.get(aNames/*[
 		'bHideCommentPlus', 
 		'bHideCommentMinus',
 		'bHideCommentNegative', 
 		'bHideCommentResult', 
+		'bHidePostMinus',
+		'bHidePostNegative', 
 		'bHideCommentSidebar', 
 		'bShowCommentsTree', 
 		'bHideCommentLeftPadding'
-	], function(result) {
+	]*/, function(result) {
 		console.log('settings: ');
 		console.dir(result);
+		var oResp = {};
+		for (let key in oLocalSettings) {
+			oLocalSettings[key] = result[key] || false;
+		}/*
 		oLocalSettings.bHideCommentPlus.val = result.bHideCommentPlus || false;
 		oLocalSettings.bHideCommentMinus.val = result.bHideCommentMinus || false;
 		oLocalSettings.bHideCommentNegative.val = result.bHideCommentNegative || false;
 		oLocalSettings.bHideCommentResult.val = result.bHideCommentResult || false;
+		oLocalSettings.bHidePostMinus.val = result.bHidePostMinus || false;
+		oLocalSettings.bHidePostNegative.val = result.bHidePostNegative || false;
 		oLocalSettings.bHideCommentSidebar.val = result.bHideCommentSidebar || false;
 		oLocalSettings.bShowCommentsTree.val = result.bShowCommentsTree || false;
-		oLocalSettings.bHideCommentLeftPadding.val = result.bHideCommentLeftPadding || false;
+		oLocalSettings.bHideCommentLeftPadding.val = result.bHideCommentLeftPadding || false;*/
 		resolve(oLocalSettings);
 	})
 }) 
@@ -106,6 +141,9 @@ oSettingsPropmise.then(implementSettings);
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	if(request.src) {
+		if(oLocalSettings[request.src]) {
+			implementSettings({request.src: {val: request.val}});
+		}/*
 		switch(request.src) {
 			case "bHideCommentPlus":
 				implementSettings({bHideCommentPlus: {val: request.val}});
@@ -113,11 +151,17 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 			case "bHideCommentMinus":
 				implementSettings({bHideCommentMinus: {val: request.val}});
 				break;
+			case "bHideCommentNegative":
+				implementSettings({bHideCommentNegative: {val: request.val}});
+				break;
 			case "bHideCommentResult":
 				implementSettings({bHideCommentResult: {val: request.val}});
 				break;
-			case "bHideCommentNegative":
-				implementSettings({bHideCommentNegative: {val: request.val}});
+			case "bHidePostMinus":
+				implementSettings({bHidePostMinus: {val: request.val}});
+				break;
+			case "bHidePostNegative":
+				implementSettings({bHidePostNegative: {val: request.val}});
 				break;
 			case "bHideCommentSidebar":
 				implementSettings({bHideCommentSidebar: {val: request.val}});
@@ -129,6 +173,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 				implementSettings({bHideCommentLeftPadding: {val: request.val}});
 				break;
 		}
+		*/
 	}
 });
 
@@ -265,7 +310,7 @@ function minimiseLeftPadding() {
 					oCommentWrappers[i].classList.remove("hideCommentLeftPadding");					
 			}
 		}
-		console.log("nPad: "+nPad);
+		//console.log("nPad: "+nPad);
 		oLocalParameters.bScroolActive = true;
 	} catch(err){
 		
@@ -433,4 +478,61 @@ function processVoteCount(oElem){
 			oEl.textContent = 0;
 		}
 	}
+}
+
+///////////////////////////////
+// POST votes update handler
+
+function setPostVoteCounterHandler(bActive){
+	var aCounters = document.getElementsByClassName("vote-topic");
+	var config = { attributes: true, childList: true, subtree: true };
+	
+	for (let i=0; i<aCounters.length; i++) {
+		// Create an observer instance linked to the callback function
+		var observer = new MutationObserver(handlePostVoteCount);
+
+		// Start observing the target node for configured mutations
+		if(bActive != undefined && bActive == false) {
+			observer.disconnect();
+		} else {
+			observer.observe(aCounters[i], config);
+			processPostVoteCount(aCounters[i]);
+		}
+	}
+}
+
+function handlePostVoteCount(mutationsList, observer){
+	var aSelectors = [];
+	for(var mutation of mutationsList) {
+		if (mutation.type == 'childList') {
+			//console.log('A child node has been added or removed.');
+			for (let j=0; j<mutationsList.length; j++) {
+				var oElem = mutationsList[j].target;
+				var id = oElem.getAttribute("id");
+				if(aSelectors.indexOf(id)<0) {
+					aSelectors.push(id);
+					processPostVoteCount(oElem);
+				}
+			}
+		}
+		else if (mutation.type == 'attributes') {
+				//console.log('The ' + mutation.attributeName + ' attribute was modified.');
+		}
+	}
+}
+
+function processPostVoteCount(oElem){
+	var sId = oElem.getAttribute("id");
+	var oId = sId.match(/vote_area_topic_(\d+)/);
+	if(oId && oId[1]) {
+		var nId = oId[1];
+		var oEl = document.querySelector("#vote_total_topic_"+nId);
+		if(oEl) {
+			var sText = oEl.textContent;
+			if(Number(sText)<0) {
+				oEl.textContent = 0;
+			}
+		}
+	}
+	
 }

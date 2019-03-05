@@ -1,19 +1,36 @@
+// hide comment +
 var oCommentPlusCheckbox = document.getElementById("toggle_comment_plus");
 oCommentPlusCheckbox.onchange = pressCommentPlus;
+// hide comment -
 var oCommentMinusCheckbox = document.getElementById("toggle_comment_minus");
 oCommentMinusCheckbox.onchange = pressCommentMinus;
 
+// comment votes 
 var oCommentResultCheckbox = document.getElementById("toggle_comment_result");
 oCommentResultCheckbox.onchange = pressCommentResult;
+// coment negative
 var oCommentNegativeCheckbox = document.getElementById("toggle_comment_negative");
 oCommentNegativeCheckbox.onchange = pressCommentNegative;
 
+// toggle sidebar
 var oCommentSidebarCheckbox = document.getElementById("toggle_sidebar_comments");
 oCommentSidebarCheckbox.onchange = pressCommentSidebar;
+// comment tree
 var oCommentTreeCheckbox = document.getElementById("toggle_comments_tree");
 oCommentTreeCheckbox.onchange = pressCommentTree;
+// comment left
 var oCommentHideLeftPAddingCheckbox = document.getElementById("toggle_comments_left_padding");
 oCommentHideLeftPAddingCheckbox.onchange = pressCommentHideLeftPadding;
+// post -
+var oPostMinusCheckbox = document.getElementById("toggle_post_minus");
+oPostMinusCheckbox.onchange = pressPostMinus;
+// post +
+var oPostNegativeCheckbox = document.getElementById("toggle_post_negative");
+oPostNegativeCheckbox.onchange = pressPostNegative;
+
+// comment 700px
+var oCommentMidthCheckbox = document.getElementById("toggle_comment_width");
+oCommentMidthCheckbox.onchange = pressCommentWidth;
 
 function pressCommentPlus (oEvent){
 	var bCommentPlusCheckboxVal = oCommentPlusCheckbox.checked;
@@ -34,6 +51,22 @@ function pressCommentNegative (oEvent){
 	var bVal = oCommentNegativeCheckbox.checked;
 	chrome.runtime.sendMessage({
 		bHideCommentNegative: bVal,
+		val: bVal
+	});
+}
+
+function pressPostMinus (oEvent){
+	var bPostMinusCheckboxVal = oPostMinusCheckbox.checked;
+	chrome.runtime.sendMessage({
+		bHidePostMinus: bPostMinusCheckboxVal,
+		val: bPostMinusCheckboxVal
+	});
+} 
+
+function pressPostNegative (oEvent){
+	var bVal = oPostNegativeCheckbox.checked;
+	chrome.runtime.sendMessage({
+		bHidePostNegative: bVal,
 		val: bVal
 	});
 }
@@ -67,27 +100,55 @@ function pressCommentHideLeftPadding (oEvent){
 		bHideCommentLeftPadding: bVal
 	});
 }
+function pressCommentWidth (oEvent){
+	var bVal = oCommentMidthCheckbox.checked;
+	//alert(bVal);
+	chrome.runtime.sendMessage({
+		bCommentWidth: bVal
+	});
+}
 
+var aParamNames = [
+	'bHideCommentPlus', 
+	'bHideCommentMinus', 
+	'bHideCommentNegative', 
+	'bHideCommentResult', 
+	'bHidePostMinus', 
+	'bHidePostNegative', 
+	'bHideCommentSidebar', 
+	'bShowCommentsTree', 
+	'bHideCommentLeftPadding', 
+	'bCommentWidth'
+];
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
-	chrome.storage.sync.get([
+	chrome.storage.sync.get(/*[
 		'bHideCommentPlus', 
 		'bHideCommentMinus', 
 		'bHideCommentNegative', 
 		'bHideCommentResult', 
+		'bHidePostMinus', 
+		'bHidePostNegative', 
 		'bHideCommentSidebar', 
 		'bShowCommentsTree', 
 		'bHideCommentLeftPadding'
-	], function(result) {	
-		resolve({
+	]*/aParamNames, function(result) {	
+		var oResp = {};
+		for (let key in result) {
+			oResp[key] = result[key] || false;
+		}
+	
+		resolve(oResp/*{
 			bHideCommentPlus: result.bHideCommentPlus || false,
 			bHideCommentMinus: result.bHideCommentMinus || false,
 			bHideCommentNegative: result.bHideCommentNegative || false,
-			bHideCommentResult: result.bHideCommentResult || false,
+			bHideCommentResult: result.bHideCommentResult || false,			
+			bHidePostMinus: result.bHidePostMinus || false,
+			bHidePostNegative: result.bHidePostNegative || false,
 			bHideCommentSidebar: result.bHideCommentSidebar || false,
 			bShowCommentsTree: result.bShowCommentsTree || false,
 			bHideCommentLeftPadding: result.bHideCommentLeftPadding || false
-		});
+		}*/);
 	})
 })
 
@@ -96,7 +157,10 @@ oSettingsPropmise.then(function(oSettings){
 	oCommentMinusCheckbox.checked = oSettings.bHideCommentMinus || false;
 	oCommentNegativeCheckbox.checked = oSettings.bHideCommentNegative || false;
 	oCommentResultCheckbox.checked = oSettings.bHideCommentResult || false;
+	oPostMinusCheckbox.checked = oSettings.bHidePostMinus || false;
+	oPostNegativeCheckbox.checked = oSettings.bHidePostNegative || false;
 	oCommentSidebarCheckbox.checked = oSettings.bHideCommentSidebar || false;
 	oCommentTreeCheckbox.checked = oSettings.bShowCommentsTree || false;
 	oCommentHideLeftPAddingCheckbox.checked = oSettings.bHideCommentLeftPadding || false;
+	oCommentMidthCheckbox.checked = oSettings.bCommentWidth || false;
 });

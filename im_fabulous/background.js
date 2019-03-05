@@ -21,6 +21,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		})			
 	}
 	
+	// hide Minus post
+	if(request.bHidePostMinus != undefined) {		
+		chrome.storage.sync.set({'bHidePostMinus': request.bHidePostMinus}, function() {
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bHidePostMinus", val: request.bHidePostMinus});
+		})			
+	}
+	
 	// hide Negative
 	if(request.bHideCommentNegative != undefined) {		
 		chrome.storage.sync.set({'bHideCommentNegative': request.bHideCommentNegative}, function() {
@@ -29,6 +40,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		chrome.tabs.query({ active: true }, function(tabs){
 			var oTab = tabs[0];
 			chrome.tabs.sendMessage(oTab.id, {src: "bHideCommentNegative", val: request.bHideCommentNegative});
+		})			
+	}
+	// hide Negative Posts
+	if(request.bHidePostNegative != undefined) {		
+		chrome.storage.sync.set({'bHidePostNegative': request.bHidePostNegative}, function() {
+    });
+			 
+		chrome.tabs.query({ active: true }, function(tabs){
+			var oTab = tabs[0];
+			chrome.tabs.sendMessage(oTab.id, {src: "bHidePostNegative", val: request.bHidePostNegative});
 		})			
 	}
 	
