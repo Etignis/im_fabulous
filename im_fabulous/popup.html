@@ -25,9 +25,11 @@
 			}
 		</style>
   </head>
-  <body>
+  <body style="transition: width 0.2s">
 		<div id="options" style="width: 300px; min-height: 10px"><!-- меню -->
+			<a href="#" id="showInfo" style="float: right">[?]</a>
 			<h1>Настройки интерфейса Имажинарии</h1>
+
 			<label ><input type="checkbox" id="toggle_post_minus"> скрыть кнопки минусов постов</label>
 			<label ><input type="checkbox" id="toggle_post_negative"> не показывать отрицательные оценки постов</label>
 			<hr>
@@ -37,13 +39,33 @@
 			<label ><input type="checkbox" id="toggle_comment_result"> скрыть оценки комментариев</label>			
 			<label ><input type="checkbox" id="toggle_comment_negative"> не показывать отрицательные оценки</label>	
 			<hr>
+			<label ><input type="checkbox" id="toggle_own_carma"> скрыть карму (экспериментально)</label>	
+			<hr>
+			
 			<label><input type="checkbox" id="toggle_sidebar_comments"> скрывать сайдбар при просмотре комментариев</label>
 			<label><input type="checkbox" id="toggle_comment_width"> максимальная ширина комментария 700 px</label>
-			<label style=""><input type="checkbox" id="toggle_comments_left_padding"> прижимать комментарии к левому краю (эксперементально)</label>
-			<label style=""><input type="checkbox" id="toggle_comments_tree"> улучшенное отображение комментариев-ответов (эксперементально)</label>
-			
-			
+			<label style=""><input type="checkbox" id="toggle_comments_left_padding"> прижимать комментарии к левому краю (экспериментально)</label>
+			<label style=""><input type="checkbox" id="toggle_comments_tree"> улучшенное отображение комментариев-ответов (экспериментально)</label>			
+		
 		</div>
+		
+		<div id="infoPanel" style="width: 500px; min-height: 10px; display: none">
+			<b>Как оно работает?</b>
+			<a href="#" id="hideInfo" style="float: right">[x]</a>
+
+			<p>Скрытие чего бы то ни было работает через добавление дополнительных CSS-стилей на страницу. Т.е. на самом деле все на месте, но не видно.</p>
+
+			<p>Чтобы уберечь хрупкую психику от лицезрения неприятного, расширение сначала скрывает вообще все, вне зависимости от настроек пользователя, а когда настройки подгружаются, снимает невидимость с тех элементов, которые пользователь видеть пока еще хочет. </p>
+
+			<hr>
+			<b>"Улучшенный" вид комментариев.</b>
+			<ul>
+				<li>Скрывать сайдбар при просмотре комментариев - сделано для того, чтобы комментарии большого уровня вложенности не сжимались слишком сильно.</li>
+				<li>Максимальная ширина комментария 700 px - чтобы комментарии (в том числе при скрытии сайдбара) не размазывались тонким слоем по всем 4K монитора уважаемого пользователя.</li>
+				<li>Прижимать комментарии к левому краю - опять же направленно на то, чтобы комментарии большого уровня вложенности не скукоживались. Эта опция может влиять на производительность.</li>
+				<li>Улучшенное отображение комментариев-ответов - ну как "улучшенное". Уж что вышло. Должно помочь понять какой комментарий на какой отвечает на самом глубоком уровне вложенности. </li>
+			 </ul>
+			</div>
 		<div id="messages"></div>
     <script src="popup.js"></script><!-- скрипт, выполняющийся при нажатии на иконку расширения-->
   </body>

@@ -1,3 +1,10 @@
+// show info
+var oShowInfo = document.getElementById("showInfo");
+oShowInfo.onclick = showInfo;
+// hide info
+var oHideInfo = document.getElementById("hideInfo");
+oHideInfo.onclick = hideInfo;
+
 // hide comment +
 var oCommentPlusCheckbox = document.getElementById("toggle_comment_plus");
 oCommentPlusCheckbox.onchange = pressCommentPlus;
@@ -31,6 +38,20 @@ oPostNegativeCheckbox.onchange = pressPostNegative;
 // comment 700px
 var oCommentMidthCheckbox = document.getElementById("toggle_comment_width");
 oCommentMidthCheckbox.onchange = pressCommentWidth;
+
+// own carma
+var oOwnCarmaCheckbox = document.getElementById("toggle_own_carma");
+oOwnCarmaCheckbox.onchange = pressOwnCarma;
+
+
+function showInfo() {
+	document.getElementById("options").style.display = "none";
+	document.getElementById("infoPanel").style.display = "block";
+}
+function hideInfo() {
+	document.getElementById("options").style.display = "block";
+	document.getElementById("infoPanel").style.display = "none";
+}
 
 function pressCommentPlus (oEvent){
 	var bCommentPlusCheckboxVal = oCommentPlusCheckbox.checked;
@@ -108,6 +129,15 @@ function pressCommentWidth (oEvent){
 	});
 }
 
+function pressOwnCarma (oEvent){
+	var bVal = oOwnCarmaCheckbox.checked;
+	
+	//alert(bVal);
+	chrome.runtime.sendMessage({
+		bOwnCarma: bVal
+	});
+}
+
 var aParamNames = [
 	'bHideCommentPlus', 
 	'bHideCommentMinus', 
@@ -118,7 +148,8 @@ var aParamNames = [
 	'bHideCommentSidebar', 
 	'bShowCommentsTree', 
 	'bHideCommentLeftPadding', 
-	'bCommentWidth'
+	'bCommentWidth', 
+	'bOwnCarma'
 ];
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
@@ -163,4 +194,5 @@ oSettingsPropmise.then(function(oSettings){
 	oCommentTreeCheckbox.checked = oSettings.bShowCommentsTree || false;
 	oCommentHideLeftPAddingCheckbox.checked = oSettings.bHideCommentLeftPadding || false;
 	oCommentMidthCheckbox.checked = oSettings.bCommentWidth || false;
+	oOwnCarmaCheckbox.checked = oSettings.bOwnCarma || false;
 });

@@ -46,6 +46,11 @@ var oLocalSettings = {
 	bCommentWidth: {
 		val: false,
 		css: ".comment{max-width: 700px}"
+	},
+	
+	bOwnCarma: {
+		val: true,
+		css: ".dropdown-user-menu .item-stat{display: none} .vote-profile{display: none}"
 	}
 };
 var oTimer;
@@ -99,8 +104,10 @@ function implementSettings(oSettings){
 	
 	
 }	
+
 implementSettings(0);
 startStalkScroll(true);
+
 var oSettingsPropmise = new Promise (function(resolve, reject){
 	var aNames = [];
 	for (let key in oLocalSettings) {
@@ -122,7 +129,7 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 		console.dir(result);
 		var oResp = {};
 		for (let key in oLocalSettings) {
-			oLocalSettings[key] = result[key] || false;
+			oLocalSettings[key].val = result[key] || false;
 		}/*
 		oLocalSettings.bHideCommentPlus.val = result.bHideCommentPlus || false;
 		oLocalSettings.bHideCommentMinus.val = result.bHideCommentMinus || false;
@@ -141,9 +148,13 @@ oSettingsPropmise.then(implementSettings);
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	if(request.src) {
-		if(oLocalSettings[request.src]) {
-			implementSettings({request.src: {val: request.val}});
-		}/*
+		var o = {};
+		o[request.src] = {val: request.val};
+		if(oLocalSettings[request.src] != undefined) {
+			implementSettings(o);
+		}
+		
+		/*
 		switch(request.src) {
 			case "bHideCommentPlus":
 				implementSettings({bHideCommentPlus: {val: request.val}});
@@ -193,6 +204,27 @@ function setGlobalCss(sStyle) {
 	}
 }
 
+function getMyId(){
+	var sMyUsername = document.querySelector("#header .username").innerText;
+	var sProfName = doqument.querySelector(".profile h2.user-login").innerText;
+	if(sMyUsername == sProfName) {
+		var oVoter = doqument.querySelector("#content .vote-topic");
+		var sId = oVoter.getAttribute("Id");
+		var oId = sId.match("/vote_area_user_(\d+)/");
+		if(oId && oId[1]) {
+			return oId[1];
+		} else {			
+			return -2;
+		}
+	}
+	return -1;
+}
+function hideMyCarma() {
+	var nId = getMyId();
+	if(nId>-1) {
+		
+	}
+}
 
 var isInViewport = function (elem) {
 	if(!elem) {
