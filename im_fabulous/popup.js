@@ -43,6 +43,10 @@ oCommentMidthCheckbox.onchange = pressCommentWidth;
 var oOwnCarmaCheckbox = document.getElementById("toggle_own_carma");
 oOwnCarmaCheckbox.onchange = pressOwnCarma;
 
+// own carma
+var oThemeRevarseCheckbox = document.getElementById("toggle_theme_reverse");
+oThemeRevarseCheckbox.onchange = pressThemeReverse;
+
 
 function showInfo() {
 	document.getElementById("options").style.display = "none";
@@ -137,6 +141,14 @@ function pressOwnCarma (oEvent){
 		bOwnCarma: bVal
 	});
 }
+function pressThemeReverse (oEvent){
+	var bVal = oThemeRevarseCheckbox.checked;
+	
+	//alert(bVal);
+	chrome.runtime.sendMessage({
+		bThemeReverse: bVal
+	});
+}
 
 var aParamNames = [
 	'bHideCommentPlus', 
@@ -149,7 +161,8 @@ var aParamNames = [
 	'bShowCommentsTree', 
 	'bHideCommentLeftPadding', 
 	'bCommentWidth', 
-	'bOwnCarma'
+	'bOwnCarma',
+	'bThemeReverse'
 ];
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
@@ -195,4 +208,5 @@ oSettingsPropmise.then(function(oSettings){
 	oCommentHideLeftPAddingCheckbox.checked = oSettings.bHideCommentLeftPadding || false;
 	oCommentMidthCheckbox.checked = oSettings.bCommentWidth || false;
 	oOwnCarmaCheckbox.checked = oSettings.bOwnCarma || false;
+	oThemeRevarseCheckbox.checked = oSettings.bThemeReverse || false;
 });

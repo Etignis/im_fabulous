@@ -51,6 +51,11 @@ var oLocalSettings = {
 	bOwnCarma: {
 		val: true,
 		css: ".dropdown-user-menu .item-stat{display: none} .vote-profile{display: none}"
+	},
+	
+	bThemeReverse: {
+		val: true,
+		css: "html, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar{filter: invert(0.9) hue-rotate(210deg);} #nav img, #wrapper img, #footer img{filter: invert(1.1) hue-rotate(-210deg);}"
 	}
 };
 var oTimer;
@@ -200,7 +205,9 @@ function setGlobalCss(sStyle) {
 		var sNewCss = document.createElement("style");
 		sNewCss.setAttribute("data-ext", "IMF");
 		sNewCss.appendChild(document.createTextNode(sStyle));
-		document.head.appendChild(sNewCss);
+		if(document.head){
+			document.head.appendChild(sNewCss);
+		}
 	}
 }
 
@@ -255,7 +262,8 @@ function startStalkScroll(bForce) {
 	var oCommentWrappers = document.getElementsByClassName("comment-wrapper");
 	var oSidebar = document.getElementById("sidebar");*/
 	var oContent = document.getElementById("content");
-	oContent.classList.add("sideTransition");
+	if(oContent && oContent.classList)
+		oContent.classList.add("sideTransition");
 	
 	window.onscroll = scrollReaction;
 	if(bForce) {
@@ -278,9 +286,10 @@ function scrollReaction() {
 					if(oContent.classList)
 						oContent.classList.add("sideHidden");
 				} else {
-					oSidebar.style.display = "block";	
+					if(oSidebar)
+						oSidebar.style.display = "block";	
 					//oContent.style.marginRight = "";	
-					if(oContent.classList)
+					if(oContent && oContent.classList)
 						oContent.classList.remove("sideHidden");	
 				}
 				

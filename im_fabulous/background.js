@@ -10,7 +10,8 @@ var aParamNames = [
 	'bShowCommentsTree', 
 	'bHideCommentLeftPadding', 
 	'bCommentWidth', 
-	'bOwnCarma'
+	'bOwnCarma',
+	'bThemeReverse'
 ];
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
