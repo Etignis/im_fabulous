@@ -55,7 +55,7 @@ var oLocalSettings = {
 	
 	bThemeReverse: {
 		val: true,
-		css: "html, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);}"
+		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);}"
 	},
 	
 	bNewCommnetOrderBranch: {
