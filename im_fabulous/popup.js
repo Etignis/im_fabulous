@@ -46,6 +46,9 @@ oOwnCarmaCheckbox.onchange = pressOwnCarma;
 // own carma
 var oThemeRevarseCheckbox = document.getElementById("toggle_theme_reverse");
 oThemeRevarseCheckbox.onchange = pressThemeReverse;
+// own carma
+var oNewCommentOrderCheckbox = document.getElementById("toggle_new_comments_order");
+oNewCommentOrderCheckbox.onchange = pressNewCommentOrder;
 
 
 function showInfo() {
@@ -133,6 +136,14 @@ function pressCommentWidth (oEvent){
 	});
 }
 
+function pressNewCommentOrder (oEvent){
+	var bVal = oNewCommentOrderCheckbox.checked;
+	//alert(bVal);
+	chrome.runtime.sendMessage({
+		bNewCommnetOrderBranch: bVal
+	});
+}
+
 function pressOwnCarma (oEvent){
 	var bVal = oOwnCarmaCheckbox.checked;
 	
@@ -162,37 +173,18 @@ var aParamNames = [
 	'bHideCommentLeftPadding', 
 	'bCommentWidth', 
 	'bOwnCarma',
-	'bThemeReverse'
+	'bThemeReverse',
+	'bNewCommnetOrderBranch'
 ];
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
-	chrome.storage.sync.get(/*[
-		'bHideCommentPlus', 
-		'bHideCommentMinus', 
-		'bHideCommentNegative', 
-		'bHideCommentResult', 
-		'bHidePostMinus', 
-		'bHidePostNegative', 
-		'bHideCommentSidebar', 
-		'bShowCommentsTree', 
-		'bHideCommentLeftPadding'
-	]*/aParamNames, function(result) {	
+	chrome.storage.sync.get(aParamNames, function(result) {	
 		var oResp = {};
 		for (let key in result) {
 			oResp[key] = result[key] || false;
 		}
 	
-		resolve(oResp/*{
-			bHideCommentPlus: result.bHideCommentPlus || false,
-			bHideCommentMinus: result.bHideCommentMinus || false,
-			bHideCommentNegative: result.bHideCommentNegative || false,
-			bHideCommentResult: result.bHideCommentResult || false,			
-			bHidePostMinus: result.bHidePostMinus || false,
-			bHidePostNegative: result.bHidePostNegative || false,
-			bHideCommentSidebar: result.bHideCommentSidebar || false,
-			bShowCommentsTree: result.bShowCommentsTree || false,
-			bHideCommentLeftPadding: result.bHideCommentLeftPadding || false
-		}*/);
+		resolve(oResp);
 	})
 })
 
@@ -209,4 +201,5 @@ oSettingsPropmise.then(function(oSettings){
 	oCommentMidthCheckbox.checked = oSettings.bCommentWidth || false;
 	oOwnCarmaCheckbox.checked = oSettings.bOwnCarma || false;
 	oThemeRevarseCheckbox.checked = oSettings.bThemeReverse || false;
+	oNewCommentOrderCheckbox.checked = oSettings.bNewCommnetOrderBranch || false;
 });

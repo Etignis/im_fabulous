@@ -55,7 +55,12 @@ var oLocalSettings = {
 	
 	bThemeReverse: {
 		val: true,
-		css: "html, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar{filter: invert(0.9) hue-rotate(210deg);} #nav img, #wrapper img, #footer img{filter: invert(1.1) hue-rotate(-210deg);}"
+		css: "html, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);}"
+	},
+	
+	bNewCommnetOrderBranch: {
+		val: false,
+		css: ""
 	}
 };
 var oTimer;
@@ -65,7 +70,7 @@ var oLocalParameters = {
 
 document.addEventListener("DOMContentLoaded", function(){oLocalParameters.DOMLoaded = true});
 //document.addEventListener("onload ", );
-window.onload = function(){oLocalParameters.Loaded = true; minimiseLeftPadding();}
+window.onload = function(){oLocalParameters.Loaded = true; minimiseLeftPadding(); setNewCommentsCounterHandler();}
 	
 	
 function implementSettings(oSettings){
@@ -105,6 +110,13 @@ function implementSettings(oSettings){
 		} else {
 			setPostVoteCounterHandler(false);
 		}
+		
+		if(oLocalSettings.bNewCommnetOrderBranch.val) {
+			// hide negative
+			setNewCommentsCounterHandler();
+		} else {
+			setNewCommentsCounterHandler(false);
+		}
 	}
 	
 	
@@ -118,33 +130,13 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 	for (let key in oLocalSettings) {
 		aNames.push(key)
 	}
-	//oLocalSettings.map(el => el.)
-	chrome.storage.sync.get(aNames/*[
-		'bHideCommentPlus', 
-		'bHideCommentMinus',
-		'bHideCommentNegative', 
-		'bHideCommentResult', 
-		'bHidePostMinus',
-		'bHidePostNegative', 
-		'bHideCommentSidebar', 
-		'bShowCommentsTree', 
-		'bHideCommentLeftPadding'
-	]*/, function(result) {
+	chrome.storage.sync.get(aNames, function(result) {
 		console.log('settings: ');
 		console.dir(result);
 		var oResp = {};
 		for (let key in oLocalSettings) {
 			oLocalSettings[key].val = result[key] || false;
-		}/*
-		oLocalSettings.bHideCommentPlus.val = result.bHideCommentPlus || false;
-		oLocalSettings.bHideCommentMinus.val = result.bHideCommentMinus || false;
-		oLocalSettings.bHideCommentNegative.val = result.bHideCommentNegative || false;
-		oLocalSettings.bHideCommentResult.val = result.bHideCommentResult || false;
-		oLocalSettings.bHidePostMinus.val = result.bHidePostMinus || false;
-		oLocalSettings.bHidePostNegative.val = result.bHidePostNegative || false;
-		oLocalSettings.bHideCommentSidebar.val = result.bHideCommentSidebar || false;
-		oLocalSettings.bShowCommentsTree.val = result.bShowCommentsTree || false;
-		oLocalSettings.bHideCommentLeftPadding.val = result.bHideCommentLeftPadding || false;*/
+		}
 		resolve(oLocalSettings);
 	})
 }) 
@@ -213,7 +205,7 @@ function setGlobalCss(sStyle) {
 
 function getMyId(){
 	var sMyUsername = document.querySelector("#header .username").innerText;
-	var sProfName = doqument.querySelector(".profile h2.user-login").innerText;
+	var sProfName = document.querySelector(".profile h2.user-login").innerText;
 	if(sMyUsername == sProfName) {
 		var oVoter = doqument.querySelector("#content .vote-topic");
 		var sId = oVoter.getAttribute("Id");
@@ -232,6 +224,7 @@ function hideMyCarma() {
 		
 	}
 }
+
 
 var isInViewport = function (elem) {
 	if(!elem) {
@@ -366,9 +359,17 @@ function scrollToComment (idComment) {
 	
 	oLocalParameters.sHashComment = idComment;
 	
-		var element = document.querySelector('#comment_id_' + idComment);
+		var element = document.getElementById('comment_id_' + idComment);
 		try{
 			var aCurrs = document.getElementsByClassName("comment-current");
+			for(let i=0; i<aCurrs.length; i++) {
+				aCurrs[i].classList.remove("comment-cur");
+			}
+		} catch (err) {
+			
+		}
+		try{
+			var aCurrs = document.getElementsByClassName("comment-cur");
 			for(let i=0; i<aCurrs.length; i++) {
 				aCurrs[i].classList.remove("comment-cur");
 			}
@@ -577,3 +578,79 @@ function processPostVoteCount(oElem){
 	}
 	
 }
+
+///////////////////////////////
+// newComments update handler
+
+function setNewCommentsCounterHandler(bActive){
+	var oCounter = document.getElementById("update");
+	if(oCounter){
+		var config = { attributes: true, childList: true, subtree: true };
+		var observer = new MutationObserver(handleNewCommentsCount);
+
+		if(bActive != undefined && bActive == false) {
+			observer.disconnect();
+		} else {
+			observer.observe(oCounter, config);
+			//reorderNewCommentsByBranches();
+			redefineNewxtCommentButton();
+		}
+
+	}	
+}
+
+function handleNewCommentsCount(mutationsList, observer){
+	redefineNewxtCommentButton();
+	//reorderNewCommentsByBranches();
+}
+function redefineNewxtCommentButton(){
+	var oButton = document.getElementById("new_comments_counter");
+	if(oButton) {
+		oButton.removeAttribute("onclick")
+		oButton.onclick = goToNextNewComment;
+	}
+}
+function goToNextNewComment() {
+	var oButton = document.getElementById("new_comments_counter");
+	var aNewComments = document.getElementsByClassName("comment-new");
+	/*
+	for(let i=0; i<aNewComments.length; i++) {
+		let oId = aNewComments.getAttr("id").match(/comment_id_(\d+)/);
+		if(oId && oId[1]) {
+			let sId = oId[1];
+			if(aCommentsIds.indexOf(sId)>-1) {
+				aCommentsIdsNew.push(sId);
+			}
+		}
+	}
+	*/
+	var sId = aNewComments[0].getAttribute("id");
+	var oId = sId.match(/comment_id_(\d+)/);
+	if(oId && oId[0]) {
+		scrollToComment(oId[1]);
+		oButton.textContent=aNewComments.length-1;		
+		aNewComments[0].classList.remove("comment-new");
+	}
+}
+
+
+function reorderNewCommentsByBranches() {
+	// var aCommentsIds = ls.comments.aCommentNew;
+	// var aCommentsIdsNew = [];
+
+	// var aNewComments = document.getElementsByClassName("comment-new");
+	// for(let i=0; i<aNewComments.length; i++) {
+		// let oId = aNewComments.getAttr("id").match(/comment_id_(\d+)/);
+		// if(oId && oId[1]) {
+			// let sId = oId[1];
+			// if(aCommentsIds.indexOf(sId)>-1) {
+				// aCommentsIdsNew.push(sId);
+			// }
+		// }
+	// }
+	// console.log("ls.comments.aCommentNew length: "+ls.comments.aCommentNew.length);
+	// console.log("aCommentsIdsNew length: "+aCommentsIdsNew.length);
+	
+	// ls.comments.aCommentNew = aCommentsIdsNew;
+}
+
