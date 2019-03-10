@@ -55,7 +55,7 @@ var oLocalSettings = {
 	
 	bThemeReverse: {
 		val: true,
-		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444}"
+		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top.mini{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444}"
 	},
 	
 	bNewCommnetOrderBranch: {
@@ -385,6 +385,9 @@ function scrollToComment (idComment) {
 	} catch (err) {
 		
 	}
+	if(element.classList){
+		element.classList.remove("comment-new");
+	}
 	element.classList.add("comment-cur");
 	var offset = getCoords(element).top; //$(element).offset().top;
 	console.log('Scroll to comment: ', element, offset);
@@ -613,44 +616,18 @@ function redefineNewxtCommentButton(){
 function goToNextNewComment() {
 	var oButton = document.getElementById("new_comments_counter");
 	var aNewComments = document.getElementsByClassName("comment-new");
-	/*
-	for(let i=0; i<aNewComments.length; i++) {
-		let oId = aNewComments.getAttr("id").match(/comment_id_(\d+)/);
-		if(oId && oId[1]) {
-			let sId = oId[1];
-			if(aCommentsIds.indexOf(sId)>-1) {
-				aCommentsIdsNew.push(sId);
-			}
-		}
-	}
-	*/
+	
 	var sId = aNewComments[0].getAttribute("id");
 	var oId = sId.match(/comment_id_(\d+)/);
 	if(oId && oId[0]) {
 		scrollToComment(oId[1]);
-		oButton.textContent=aNewComments.length-1;		
-		aNewComments[0].classList.remove("comment-new");
+		setTimeout(function(){
+			aNewComments = document.getElementsByClassName("comment-new");
+			oButton.textContent=aNewComments.length;
+			redefineNewxtCommentButton();
+		}, 1000);
+		//oButton.textContent=aNewComments.length-1;		
+		//aNewComments[0].classList.remove("comment-new");
 	}
-}
-
-
-function reorderNewCommentsByBranches() {
-	// var aCommentsIds = ls.comments.aCommentNew;
-	// var aCommentsIdsNew = [];
-
-	// var aNewComments = document.getElementsByClassName("comment-new");
-	// for(let i=0; i<aNewComments.length; i++) {
-		// let oId = aNewComments.getAttr("id").match(/comment_id_(\d+)/);
-		// if(oId && oId[1]) {
-			// let sId = oId[1];
-			// if(aCommentsIds.indexOf(sId)>-1) {
-				// aCommentsIdsNew.push(sId);
-			// }
-		// }
-	// }
-	// console.log("ls.comments.aCommentNew length: "+ls.comments.aCommentNew.length);
-	// console.log("aCommentsIdsNew length: "+aCommentsIdsNew.length);
 	
-	// ls.comments.aCommentNew = aCommentsIdsNew;
 }
-
