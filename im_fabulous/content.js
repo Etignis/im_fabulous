@@ -14,7 +14,7 @@ var oLocalSettings = {
 	
 	bHideCommentResult: {
 		val: true,
-		css: ".comment-wrapper .vote-count{display: none !important;}"
+		css: ".comment-wrapper .vote-count,  .comments .vote-count{display: none !important;}"
 	},
 	
 	bHideCommentNegative: {
@@ -34,7 +34,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} .comment-content{transition: background .2s, border-color .2s, box-shadow .2s}"
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment-content{transition: background .2s, border-color .2s, box-shadow .2s}"
 	}	,
 	
 	bHidePostMinus: {
@@ -64,12 +64,12 @@ var oLocalSettings = {
 	
 	bNewCommnetOrderBranch: {
 		val: false,
-		css: ""
+		css: "#new_comments_counter{display: none !important}"
 	}
 };
 var oTimer;
 var oLocalParameters = {
-	bScroolActive: false
+	bScrollActive: false
 };
 
 document.addEventListener("DOMContentLoaded", function(){oLocalParameters.DOMLoaded = true});
@@ -245,8 +245,8 @@ function startStalkScroll(bForce) {
 }
 function scrollReaction() {
 		clearTimeout(oTimer);
-		if(oLocalParameters.bScroolActive) {
-			oLocalParameters.bScroolActive = false;
+		if(oLocalParameters.bScrollActive) {
+			oLocalParameters.bScrollActive = false;
 		} else {
 		oTimer = setTimeout(function(){
 			var oComments = document.getElementById("comments");
@@ -267,7 +267,7 @@ function scrollReaction() {
 			}
 			
 			minimiseLeftPadding();
-			
+			/*/
 			setTimeout(function(){
 				// focus on current comment
 				var oCurrCom = document.querySelector(".comment-current");
@@ -284,23 +284,21 @@ function scrollReaction() {
 				}
 				if(sHash) {
 					var oHash = sHash.match(/comment(\d+)/);
-					if(oHash && oHash[1] /*&& oHash[1] != oLocalParameters.sHashComment*/) {
+					if(oHash && oHash[1]) {
 						sId = oHash[1];
 						
 						if(!document.getElementsByClassName("comment-cur").length) {
 							bForce = true;
 						}
-						//oLocalParameters.sHashComment = sId
-						//location.hash = "";
 					}
 				}
 				
-				if(sId /*&& sId != oLocalParameters.sHashComment*/ && oLocalParameters.bScroolActive == false || bForce) {
-					oLocalParameters.bScroolActive = true;
+				if((sId && oLocalParameters.bScrollActive == false|| bForce) && oLocalSettings.bHideCommentLeftPadding.val ) {
+					oLocalParameters.bScrollActive = true;
 					scrollToComment(sId);
 				}
 			}, 1500);
-			
+			/**/
 			
 			clearTimeout(oTimer);
 		}, 100);
@@ -310,7 +308,7 @@ function scrollReaction() {
 }
 
 function minimiseLeftPadding() {
-	if(!oLocalParameters.Loaded) {
+	if(!oLocalParameters.Loaded || !oLocalSettings.bHideCommentLeftPadding.val) {
 		return;
 	}
 	try{
@@ -332,7 +330,11 @@ function minimiseLeftPadding() {
 			}
 		}
 		//console.log("nPad: "+nPad);
-		oLocalParameters.bScroolActive = true;
+		oLocalParameters.bScrollActive = true;
+		setTimeout(function(){
+			oLocalParameters.bScrollActive = false;
+			scrollToComment();
+		}, 50);
 	} catch(err){
 		
 	}
@@ -341,43 +343,68 @@ function minimiseLeftPadding() {
 	
 // Прокрутка к комментарию
 function scrollToComment (idComment) {
-	if(!oLocalParameters.Loaded || oLocalParameters.sHashComment == idComment) {
-		oLocalParameters.bScroolActive = false;
-		return;
-	}
-	
-	oLocalParameters.sHashComment = idComment;
-	
-	var element = document.getElementById('comment_id_' + idComment);
-	try{
-		var aCurrs = document.getElementsByClassName("comment-current");
-		for(let i=0; i<aCurrs.length; i++) {
-			aCurrs[i].classList.remove("comment-cur");
+	//setTimeout(function(){
+		var bAuto = false;
+		if(!idComment) {
+			var aNewComments = document.getElementsByClassName("comment-new");
+			if(aNewComments && aNewComments.length) {
+				var sId = aNewComments[0].getAttribute("id");
+				var oId = sId.match(/comment_id_(\d+)/);
+				if(oId && oId[1]) {
+					idComment = oId[1];
+					bAuto= true;
+				}
+			}
+		} else {
+			
 		}
-	} catch (err) {
-		
-	}
-	try{
-		var aCurrs = document.getElementsByClassName("comment-cur");
-		for(let i=0; i<aCurrs.length; i++) {
-			aCurrs[i].classList.remove("comment-cur");
+		/*/
+		if(!oLocalParameters.Loaded || oLocalParameters.sHashComment == idComment) {
+			oLocalParameters.bScrollActive = false;
+			return;
 		}
-	} catch (err) {
 		
-	}
-	if(element.classList){
-		element.classList.remove("comment-new");
-	}
-	element.classList.add("comment-cur");
-	var offset = getCoords(element).top; //$(element).offset().top;
-	console.log('Scroll to comment: ', element, offset);
-	
-	window.scrollTo({
-		top: offset-150/*,
-		behavior: "smooth"*/
-	});
-	oLocalParameters.bScroolActive = false;
-
+		oLocalParameters.sHashComment = idComment;
+		/**/
+		if(!idComment) {
+			return;
+		}
+		var element = document.getElementById('comment_id_' + idComment);
+		try{
+			var aCurrs = document.getElementsByClassName("comment-current");
+			for(let i=0; i<aCurrs.length; i++) {
+				aCurrs[i].classList.remove("comment-cur");
+			}
+		} catch (err) {
+			
+		}
+		try{
+			var aCurrs = document.getElementsByClassName("comment-cur");
+			for(let i=0; i<aCurrs.length; i++) {
+				aCurrs[i].classList.remove("comment-cur");
+			}
+		} catch (err) {
+			
+		}
+		/*
+		if(element.classList && !bAuto){
+			element.classList.remove("comment-new");
+		}
+		*/
+		element.classList.add("comment-cur");
+		var offset = getCoords(element).top; //$(element).offset().top;
+		var h = window.innerHeight;
+		console.log('Scroll to comment: ', element, offset);
+		
+		
+		window.scrollTo({
+			top: offset-h/4/*,
+			behavior: "smooth"*/
+		});
+		oLocalParameters.bScrollActive = false;
+		
+		//window.location.hash = "";
+	//}, 300);
 };
 function getCoords(elem) { // кроме IE8-
   var box = elem.getBoundingClientRect();
@@ -421,8 +448,7 @@ function setCommentsTree(){
 									console.log(oCurrentNode.parentNode.getAttribute('id'));
 									
 									// commentBefore
-									//document.getElementById(sRootId).classList.add("commentBefore");
-									//aComments[k].parentNode.style.backgroundColor = "#edf4fe";
+
 									aComments[k].parentNode.classList.add("backgroundCommentGap");
 									//backgroundCommentGap
 									const style = getComputedStyle(document.getElementById(sRootId));
@@ -576,39 +602,76 @@ function setNewCommentsCounterHandler(bActive){
 		} else {
 			observer.observe(oCounter, config);
 			//reorderNewCommentsByBranches();
-			redefineNewxtCommentButton();
 		}
+			redefineNewxtCommentButton();
 
 	}	
 }
 
 function handleNewCommentsCount(mutationsList, observer){
-	redefineNewxtCommentButton();
+	if( mutationsList[0].target != document.getElementById("newest_comments_counter") &&
+		(!mutationsList[2] || mutationsList[1] && mutationsList[2].removedNodes[0].getAttribute("id") != "newest_comments_counter")
+	) {
+		redefineNewxtCommentButton();
+	}
 	//reorderNewCommentsByBranches();
 }
 function redefineNewxtCommentButton(){
-	var oButton = document.getElementById("new_comments_counter");
-	if(oButton) {
-		oButton.removeAttribute("onclick")
-		oButton.onclick = goToNextNewComment;
+	var oOldButton = document.getElementById("new_comments_counter");
+	var oNewButton = document.getElementById("newest_comments_counter");
+	if(oOldButton && oLocalSettings.bNewCommnetOrderBranch.val) {
+		let aNewComments = document.getElementsByClassName("comment-new");
+		let nNewComs =  aNewComments.length;
+		if(oNewButton) {
+		} else {
+			let sNewButton = '<a href="#" class="new-comments" id="newest_comments_counter" title="Число новых комментариев">'+nNewComs+'</a>';
+			oNewButton = document.createElement('a');
+			oNewButton.setAttribute("href", "#");
+			oNewButton.setAttribute("class", "new-comments");
+			oNewButton.setAttribute("id", "newest_comments_counter");
+			oNewButton.setAttribute("title", "Число новых комментариев");
+			oOldButton.parentNode.appendChild(oNewButton);
+			oNewButton.onclick = goToNextNewComment;
+		}
+		oNewButton.innerHTML = nNewComs;
+		if(nNewComs == 0) {
+			oOldButton.parentNode.removeChild(oNewButton);
+		}
+		
+	} else {
+		if(oNewButton) {
+			oOldButton.parentNode.removeChild(oNewButton);
+		}
 	}
 }
 function goToNextNewComment() {
 	var oButton = document.getElementById("new_comments_counter");
 	var aNewComments = document.getElementsByClassName("comment-new");
-	
-	var sId = aNewComments[0].getAttribute("id");
-	var oId = sId.match(/comment_id_(\d+)/);
-	if(oId && oId[1]) {
-		scrollToComment(oId[1]);
-		window.location.hash = "#comment"+oId[1];
-		setTimeout(function(){
-			aNewComments = document.getElementsByClassName("comment-new");
-			oButton.textContent=aNewComments.length;
-			redefineNewxtCommentButton();
-		}, 1000);
-		//oButton.textContent=aNewComments.length-1;		
-		//aNewComments[0].classList.remove("comment-new");
+	if(oLocalParameters.latestNewCommentId && aNewComments && aNewComments.length>0) {
+		aNewComments[0].classList.remove("comment-new");
+		aNewComments = document.getElementsByClassName("comment-new");
 	}
-	
+	if(aNewComments.length>0) {
+		var sId = aNewComments[0].getAttribute("id");
+		var oId = sId.match(/comment_id_(\d+)/);
+		if(oId && oId[1]) {			
+			oLocalParameters.latestNewCommentId = oId[1];
+			scrollToComment(oId[1]);
+			window.location.hash = "#comment"+oId[1];
+			setTimeout(function(){
+				redefineNewxtCommentButton();
+			}, 1000);
+		}
+	} else {
+		try{
+			var aCurrs = document.getElementsByClassName("comment-cur");
+			for(let i=0; i<aCurrs.length; i++) {
+				aCurrs[i].classList.remove("comment-cur");
+			}
+		} catch (err) {
+			
+		}
+		redefineNewxtCommentButton();
+	}
+	return false;
 }
