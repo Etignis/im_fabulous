@@ -9,12 +9,7 @@
     "48": "ico_48.png"
   },
 	
-	"applications": {
-    "gecko": {
-      "id": "im_fabolous@youknowwho.ru",
-      "strict_min_version": "45.0"
-    }
-  },
+
 	
   "content_scripts": [
     {
