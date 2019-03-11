@@ -1,3 +1,5 @@
+const API = (window.navigator.vendor=="Google Inc.")? chrome : browser;
+
 // show info
 var oShowInfo = document.getElementById("showInfo");
 oShowInfo.onclick = showInfo;
@@ -62,14 +64,14 @@ function hideInfo() {
 
 function pressCommentPlus (oEvent){
 	var bCommentPlusCheckboxVal = oCommentPlusCheckbox.checked;
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHideCommentPlus: bCommentPlusCheckboxVal,
 		val: bCommentPlusCheckboxVal
 	});
 }
 function pressCommentMinus (oEvent){
 	var bCommentMinusCheckboxVal = oCommentMinusCheckbox.checked;
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHideCommentMinus: bCommentMinusCheckboxVal,
 		val: bCommentMinusCheckboxVal
 	});
@@ -77,7 +79,7 @@ function pressCommentMinus (oEvent){
 
 function pressCommentNegative (oEvent){
 	var bVal = oCommentNegativeCheckbox.checked;
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHideCommentNegative: bVal,
 		val: bVal
 	});
@@ -85,7 +87,7 @@ function pressCommentNegative (oEvent){
 
 function pressPostMinus (oEvent){
 	var bPostMinusCheckboxVal = oPostMinusCheckbox.checked;
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHidePostMinus: bPostMinusCheckboxVal,
 		val: bPostMinusCheckboxVal
 	});
@@ -93,14 +95,14 @@ function pressPostMinus (oEvent){
 
 function pressPostNegative (oEvent){
 	var bVal = oPostNegativeCheckbox.checked;
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHidePostNegative: bVal,
 		val: bVal
 	});
 }
 function pressCommentResult (oEvent){
 	var bVal = oCommentResultCheckbox.checked;
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHideCommentResult: bVal,
 		val: bVal
 	});
@@ -109,7 +111,7 @@ function pressCommentResult (oEvent){
 function pressCommentSidebar (oEvent){
 	var bVal = oCommentSidebarCheckbox.checked;
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHideCommentSidebar: bVal
 	});
 }
@@ -117,21 +119,21 @@ function pressCommentSidebar (oEvent){
 function pressCommentTree (oEvent){
 	var bVal = oCommentTreeCheckbox.checked;
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bShowCommentsTree: bVal
 	});
 }
 function pressCommentHideLeftPadding (oEvent){
 	var bVal = oCommentHideLeftPAddingCheckbox.checked;
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bHideCommentLeftPadding: bVal
 	});
 }
 function pressCommentWidth (oEvent){
 	var bVal = oCommentMidthCheckbox.checked;
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bCommentWidth: bVal
 	});
 }
@@ -139,7 +141,7 @@ function pressCommentWidth (oEvent){
 function pressNewCommentOrder (oEvent){
 	var bVal = oNewCommentOrderCheckbox.checked;
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bNewCommnetOrderBranch: bVal
 	});
 }
@@ -148,7 +150,7 @@ function pressOwnCarma (oEvent){
 	var bVal = oOwnCarmaCheckbox.checked;
 	
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bOwnCarma: bVal
 	});
 }
@@ -156,7 +158,7 @@ function pressThemeReverse (oEvent){
 	var bVal = oThemeRevarseCheckbox.checked;
 	
 	//alert(bVal);
-	chrome.runtime.sendMessage({
+	API.runtime.sendMessage({
 		bThemeReverse: bVal
 	});
 }
@@ -178,7 +180,7 @@ var aParamNames = [
 ];
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
-	chrome.storage.sync.get(aParamNames, function(result) {	
+	API.storage.sync.get(aParamNames, function(result) {	
 		var oResp = {};
 		for (let key in result) {
 			oResp[key] = result[key] || false;

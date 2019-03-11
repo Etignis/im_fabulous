@@ -1,3 +1,4 @@
+const API = (window.navigator.vendor=="Google Inc.")? chrome : browser;
 
 var aParamNames = [
 	'bHideCommentPlus', 
@@ -15,18 +16,22 @@ var aParamNames = [
 	'bNewCommnetOrderBranch'
 ];
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+API.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	
 	for(let key in request) {
 		if(aParamNames.indexOf(key)>-1 && request[key] != undefined) {
 			var o = {};
 			o[key] = request[key];
-			chrome.storage.sync.set(o, function() {
+			API.storage.sync.set(o, function() {
 			});
 				 
-			chrome.tabs.query({ active: true }, function(tabs){
+			API.tabs.query({ currentWindow: true,active: true }, function(tabs){
 				var oTab = tabs[0];
-				chrome.tabs.sendMessage(oTab.id, {src: key, val: request[key]});
+				var o = {};
+				o.src = key;
+				o.val = request[key];
+				API.tabs.sendMessage(oTab.id, o);
+				//API.runtime.sendMessage(o);
 			})			
 		}
 	}

@@ -1,3 +1,7 @@
+"use strict";
+
+const API = (window.navigator.vendor=="Google Inc.")? chrome : browser;
+
 var oLocalSettings = {
 	bHideCommentPlus: {
 		val: true,
@@ -30,7 +34,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} "
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A;} .comment-content{transition: background .2s, border-color .2s, box-shadow .2s}"
 	}	,
 	
 	bHidePostMinus: {
@@ -55,7 +59,7 @@ var oLocalSettings = {
 	
 	bThemeReverse: {
 		val: true,
-		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top.mini{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444}"
+		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top.mini{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444} .comment.comment-current .comment-content{background: #def4c8}"
 	},
 	
 	bNewCommnetOrderBranch: {
@@ -130,7 +134,7 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 	for (let key in oLocalSettings) {
 		aNames.push(key)
 	}
-	chrome.storage.sync.get(aNames, function(result) {
+	API.storage.sync.get(aNames, function(result) {
 		console.log('settings: ');
 		console.dir(result);
 		var oResp = {};
@@ -143,47 +147,26 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 
 oSettingsPropmise.then(implementSettings);
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+API.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if(request.src) {
 		var o = {};
 		o[request.src] = {val: request.val};
 		if(oLocalSettings[request.src] != undefined) {
 			implementSettings(o);
 		}
-		
-		/*
-		switch(request.src) {
-			case "bHideCommentPlus":
-				implementSettings({bHideCommentPlus: {val: request.val}});
-				break;
-			case "bHideCommentMinus":
-				implementSettings({bHideCommentMinus: {val: request.val}});
-				break;
-			case "bHideCommentNegative":
-				implementSettings({bHideCommentNegative: {val: request.val}});
-				break;
-			case "bHideCommentResult":
-				implementSettings({bHideCommentResult: {val: request.val}});
-				break;
-			case "bHidePostMinus":
-				implementSettings({bHidePostMinus: {val: request.val}});
-				break;
-			case "bHidePostNegative":
-				implementSettings({bHidePostNegative: {val: request.val}});
-				break;
-			case "bHideCommentSidebar":
-				implementSettings({bHideCommentSidebar: {val: request.val}});
-				break;
-			case "bShowCommentsTree":
-				implementSettings({bShowCommentsTree: {val: request.val}});
-				break;
-			case "bHideCommentLeftPadding":
-				implementSettings({bHideCommentLeftPadding: {val: request.val}});
-				break;
-		}
-		*/
 	}
 });
+/*
+API.extension.onMessage.addListener(function(request, sender, sendResponse) {
+	if(request.src) {
+		var o = {};
+		o[request.src] = {val: request.val};
+		if(oLocalSettings[request.src] != undefined) {
+			implementSettings(o);
+		}
+	}
+});
+*/
 
 
 function setGlobalCss(sStyle) {
@@ -251,9 +234,6 @@ var isAboveViewport = function (elem) {
 };
 
 function startStalkScroll(bForce) {
-	/*var oComments = document.getElementById("comments");
-	var oCommentWrappers = document.getElementsByClassName("comment-wrapper");
-	var oSidebar = document.getElementById("sidebar");*/
 	var oContent = document.getElementById("content");
 	if(oContent && oContent.classList)
 		oContent.classList.add("sideTransition");
@@ -619,8 +599,9 @@ function goToNextNewComment() {
 	
 	var sId = aNewComments[0].getAttribute("id");
 	var oId = sId.match(/comment_id_(\d+)/);
-	if(oId && oId[0]) {
+	if(oId && oId[1]) {
 		scrollToComment(oId[1]);
+		window.location.hash = "#comment"+oId[1];
 		setTimeout(function(){
 			aNewComments = document.getElementsByClassName("comment-new");
 			oButton.textContent=aNewComments.length;
