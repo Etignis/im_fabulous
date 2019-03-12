@@ -592,7 +592,7 @@ function setNewCommentsCounterHandler(bActive){
 
 function handleNewCommentsCount(mutationsList, observer){
 	if( mutationsList[0].target != document.getElementById("newest_comments_counter") &&
-		(!mutationsList[2] || mutationsList[2] && mutationsList[2].removedNodes[0].getAttribute("id") != "newest_comments_counter")
+		(!mutationsList[2] || mutationsList[2] && mutationsList[2].removedNodes[0] && mutationsList[2].removedNodes[0].getAttribute("id") != "newest_comments_counter")
 	) {
 		redefineNewxtCommentButton();
 	}
