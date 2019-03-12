@@ -56,10 +56,12 @@ oNewCommentOrderCheckbox.onchange = pressNewCommentOrder;
 function showInfo() {
 	document.getElementById("options").style.display = "none";
 	document.getElementById("infoPanel").style.display = "block";
+	return false;
 }
 function hideInfo() {
 	document.getElementById("options").style.display = "block";
 	document.getElementById("infoPanel").style.display = "none";
+	return false;
 }
 
 function pressCommentPlus (oEvent){
@@ -161,6 +163,13 @@ function pressThemeReverse (oEvent){
 	API.runtime.sendMessage({
 		bThemeReverse: bVal
 	});
+	/*/
+	if(bVal) {
+		document.body.classList.add("reverse");
+	} else {
+		document.body.classList.remove("reverse");
+	}
+	/**/
 }
 
 var aParamNames = [
