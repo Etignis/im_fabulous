@@ -67,7 +67,7 @@ var oLocalSettings = {
 		css: "#new_comments_counter{display: none !important}"
 	}
 };
-var oTimer;
+var oTimer, oTimerPadding;
 var oLocalParameters = {
 	bScrollActive: false
 };
@@ -249,23 +249,8 @@ function scrollReaction() {
 			oLocalParameters.bScrollActive = false;
 		} else {
 		oTimer = setTimeout(function(){
-			var oComments = document.getElementById("comments");
-			var oSidebar = document.getElementById("sidebar");
-			var oContent = document.getElementById("content");
 			
-			if(isInViewport(oComments)) {
-				oSidebar.style.display = "none";
-				//oContent.style.marginRight = "0";
-				if(oContent.classList)
-					oContent.classList.add("sideHidden");
-			} else {
-				if(oSidebar)
-					oSidebar.style.display = "block";	
-				//oContent.style.marginRight = "";	
-				if(oContent && oContent.classList)
-					oContent.classList.remove("sideHidden");	
-			}
-			
+			hideSidebar();
 			minimiseLeftPadding();
 						
 			clearTimeout(oTimer);
@@ -275,6 +260,27 @@ function scrollReaction() {
 		// oCommentWrappers
 }
 
+function hideSidebar() {
+	if(oLocalSettings.bHideCommentSidebar.val){
+		var oComments = document.getElementById("comments");
+		var oSidebar = document.getElementById("sidebar");
+		var oContent = document.getElementById("content");
+		
+		if(isInViewport(oComments)) {
+			oSidebar.style.display = "none";
+			//oContent.style.marginRight = "0";
+			if(oContent.classList)
+				oContent.classList.add("sideHidden");
+		} else {
+			if(oSidebar)
+				oSidebar.style.display = "block";	
+			//oContent.style.marginRight = "";	
+			if(oContent && oContent.classList)
+				oContent.classList.remove("sideHidden");	
+		}
+	}
+}
+
 function minimiseLeftPadding() {
 	if(!oLocalParameters.Loaded || !oLocalSettings.bHideCommentLeftPadding.val) {
 		return;
@@ -282,6 +288,7 @@ function minimiseLeftPadding() {
 	try{
 		var oCommentWrappers = document.getElementsByClassName("comment-wrapper");
 		let nPad = 0;
+		let bChange = false;
 					
 		for(let i=0; i<oCommentWrappers.length; i++){
 			if(isAboveViewport(oCommentWrappers[i])) {
@@ -290,20 +297,24 @@ function minimiseLeftPadding() {
 					if(style['padding-left'].replace(/[^\d]/g,"")>10){
 						oCommentWrappers[i].classList.add("hideCommentLeftPadding");
 						nPad++;
+						bChange = true;
 					}
 				}
 			} else {
 				if(oCommentWrappers[i].className.indexOf("hideCommentLeftPadding")>-1)
-					oCommentWrappers[i].classList.remove("hideCommentLeftPadding");					
+					oCommentWrappers[i].classList.remove("hideCommentLeftPadding");		
+					bChange = true;			
 			}
 		}
 		//console.log("nPad: "+nPad);
 		oLocalParameters.bScrollActive = true;
-		setTimeout(function(){
-			if(/comment\d/.test(window.location.hash)){
+		clearTimeout(oTimerPadding);
+		oTimerPadding = setTimeout(function(){			
+			if(/comment\d/.test(window.location.hash) && bChange){
 				oLocalParameters.bScrollActive = false;
 				scrollToComment();
 			}
+			clearTimeout(oTimerPadding);;
 		}, 50);
 	} catch(err){
 		
@@ -354,9 +365,13 @@ function scrollToComment (idComment, bRemoveNewness) {
 		element.classList.add("comment-cur");
 		var offset = getCoords(element).top; //$(element).offset().top;
 		var h = window.innerHeight;
-		console.log('Scroll to comment: ', element, offset);
+		//console.log('Scroll to comment: ', element, offset);
 		
 		
+		window.scrollTo({
+			top: offset-h/4-30/*/,
+			behavior: "smooth"/**/
+		});
 		window.scrollTo({
 			top: offset-h/4/**/,
 			behavior: "smooth"/**/
@@ -365,7 +380,7 @@ function scrollToComment (idComment, bRemoveNewness) {
 		
 		var oProm = new Promise(function(resolve, reject) {
 			if(element.classList && bRemoveNewness){
-				setTimeout(function(){element.classList.remove("comment-new"); resolve()}, 3000);
+				setTimeout(function(){element.classList.remove("comment-new"); resolve()}, 500);
 			} else {
 				resolve()
 			}
@@ -577,7 +592,7 @@ function setNewCommentsCounterHandler(bActive){
 
 function handleNewCommentsCount(mutationsList, observer){
 	if( mutationsList[0].target != document.getElementById("newest_comments_counter") &&
-		(!mutationsList[2] || mutationsList[1] && mutationsList[2].removedNodes[0].getAttribute("id") != "newest_comments_counter")
+		(!mutationsList[2] || mutationsList[2] && mutationsList[2].removedNodes[0].getAttribute("id") != "newest_comments_counter")
 	) {
 		redefineNewxtCommentButton();
 	}
@@ -634,7 +649,7 @@ function goToNextNewComment() {
 			oWait.then(function(){
 				setTimeout(function(){
 					redefineNewxtCommentButton();
-				}, 300);
+				}, 100);
 			});
 			
 		}
