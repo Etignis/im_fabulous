@@ -288,7 +288,7 @@ function minimiseLeftPadding() {
 	try{
 		var oCommentWrappers = document.getElementsByClassName("comment-wrapper");
 		let nPad = 0;
-		let bChange = false;
+		var bChange = false;
 					
 		for(let i=0; i<oCommentWrappers.length; i++){
 			if(isAboveViewport(oCommentWrappers[i])) {
@@ -640,10 +640,10 @@ function goToNextNewComment() {
 			oLocalParameters.latestNewCommentId = oId[1];
 			var oWait = scrollToComment(oId[1], true);
 			if(history.pushState) {
-					history.pushState(null, null, "#comment"+oId[1]);
+				history.pushState(null, null, "#comment"+oId[1]);
 			}
 			else {
-					location.hash = "#comment"+oId[1];
+				location.hash = "#comment"+oId[1];
 			}
 			//window.location.hash = "#comment"+oId[1];
 			oWait.then(function(){
