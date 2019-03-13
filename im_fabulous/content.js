@@ -74,7 +74,7 @@ var oLocalParameters = {
 
 document.addEventListener("DOMContentLoaded", function(){oLocalParameters.DOMLoaded = true});
 //document.addEventListener("onload ", );
-window.onload = function(){oLocalParameters.Loaded = true; minimiseLeftPadding(); setNewCommentsCounterHandler();}
+window.onload = function(){oLocalParameters.Loaded = true; minimiseLeftPadding(); setNewCommentsCounterHandler(); setCommentsTree();}
 	
 	
 function implementSettings(oSettings){
@@ -399,32 +399,31 @@ function getCoords(elem) { // кроме IE8-
 }
 
 function setCommentsTree(){
+	if(!oLocalSettings.bShowCommentsTree.val) {
+		return;
+	}
 	var aCommentWrappers = document.getElementsByClassName("comment-wrapper");
 	var oComData={};
 	for(let i=0; i<aCommentWrappers.length; i++) {
 		let aChildNodes = aCommentWrappers[i].childNodes;
 		for(let j=0; j<aChildNodes.length; j++) {
-			//			console.log("j: "+j);
-			//			console.log("aChildNodes.length: "+aChildNodes.length);
+			
 			let oCurrentNode = aChildNodes[j];// debugger;
 			if(oCurrentNode.className == "comment-wrapper"){
-				try{//debugger;
+				try{
 					let nChildrenCount = oCurrentNode.getElementsByClassName("comment-wrapper").length;
 					if(nChildrenCount==0) {
-						//console.log(oCurrentNode.getAttribute('id'));
-						//continue;
+						
 						let aComments = oCurrentNode.getElementsByClassName("comment");
-						//if(aComments.length>1) console,log(aComments.length);
+						
 						for(let k=0; k<aComments.length; k++) {
 							let sScriptLink = aComments[k].getElementsByClassName("comment-info")[0].getElementsByClassName("goto-comment-parent")[0].getElementsByTagName("a")[0].getAttribute("onclick");
-							// "ls.comments.goToParentComment(219740,219674); return false;"
+							
 							let oLink = sScriptLink.match(/goToParentComment\(\d+,(\d+)\)/);
 							if(oLink && oLink[1]){
-								//debugger;
-								//aComments[k].style.backgroundColor = "red";
-								// comment_wrapper_id_219950
+								
 								var sRootId = "comment_wrapper_id_"+oLink[1];
-								//.parentNode
+								
 								if(document.getElementById(sRootId).parentNode == oCurrentNode.parentNode){
 									console.log(document.getElementById(sRootId).parentNode.getAttribute('id'));
 									console.log(oCurrentNode.parentNode.getAttribute('id'));
@@ -432,19 +431,17 @@ function setCommentsTree(){
 									// commentBefore
 
 									aComments[k].parentNode.classList.add("backgroundCommentGap");
-									//backgroundCommentGap
+									
 									const style = getComputedStyle(document.getElementById(sRootId));
 									
-									//var nPadding = style['padding-left'].replace(/[^\d]/g,"") ;//aComments[k].parentNode.style.paddingLeft.replace(/[^\d]/g,"");
+									
 									var nPadding = 1;
-									//var nTranslate = style['padding-left'].replace(/[^\d]/g,"") ;//aComments[k].parentNode.style.paddingLeft.replace(/[^\d]/g,"");
 									if(oComData[sRootId]) {
 										nPadding = oComData[sRootId];
 									}
 									var nNewPadding = nPadding+1;
 									oComData[aComments[k].parentNode.getAttribute('id')] = nNewPadding;
 									aComments[k].parentNode.style.paddingLeft = (nNewPadding * 10)+"px";
-									//aComments[k].parentNode.style.transform = "translate("+nNewPadding+"px)";
 								}
 							}
 						}
