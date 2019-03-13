@@ -452,7 +452,8 @@ function setCommentsTree(){
 									aComments[k].parentNode.classList.add("backgroundCommentGap");
 									
 									const style = getComputedStyle(document.getElementById(sRootId));
-									
+									//const style = getComputedStyle(oCommentWrappers[i]);
+					//if(style['padding-left'].replace(/[^\d]/g,"")>10){
 									
 									var nPadding = 1;
 									if(oComData[sRootId]) {
@@ -460,7 +461,7 @@ function setCommentsTree(){
 									}
 									var nNewPadding = nPadding+1;
 									oComData[aComments[k].parentNode.getAttribute('id')] = nNewPadding;
-									aComments[k].parentNode.style.paddingLeft = (nNewPadding * 10)+"px";
+									aComments[k].parentNode.style.paddingLeft = Number(getComputedStyle(aComments[k].parentNode).paddingLeft.replace(/[^\d]/g,"")) + (nNewPadding * 10)+"px";
 								}
 							}
 						}
@@ -637,6 +638,14 @@ function redefineNewxtCommentButton(){
 		oNewButton.innerHTML = nNewComs;
 		if(nNewComs == 0) {
 			oOldButton.parentNode.removeChild(oNewButton);
+			try{
+				var aCurrs = document.getElementsByClassName("comment-cur");
+				for(let i=0; i<aCurrs.length; i++) {
+					aCurrs[i].classList.remove("comment-cur");
+				}
+			} catch (err) {
+				
+		}
 		}
 		
 	} else {
