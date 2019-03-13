@@ -67,7 +67,7 @@ var oLocalSettings = {
 		css: "#new_comments_counter{display: none !important}"
 	}
 };
-var oTimer, oTimerPadding;
+var oTimer, oTimerPadding, oTimerNewComments;
 var oLocalParameters = {
 	bScrollActive: false
 };
@@ -613,7 +613,11 @@ function handleNewCommentsCount(mutationsList, observer){
 		mutationsList[2] && mutationsList[2].removedNodes[0] && mutationsList[2].removedNodes[0].getAttribute && mutationsList[2].removedNodes[0].getAttribute("id") != "newest_comments_counter") ||
 		mutationsList[3] && mutationsList[3].addedNodes && mutationsList[3].addedNodes[0] && mutationsList[3].addedNodes[0].data && mutationsList[3].addedNodes[0].data >0
 	) {
-		redefineNewxtCommentButton();
+		clearTimeout(oTimerNewComments);
+		oTimerNewComments = setTimeout(function(){
+			redefineNewxtCommentButton();
+			clearTimeout(oTimerNewComments);
+		}, 100);
 	}
 	//reorderNewCommentsByBranches();
 }
@@ -638,14 +642,14 @@ function redefineNewxtCommentButton(){
 		oNewButton.innerHTML = nNewComs;
 		if(nNewComs == 0) {
 			oOldButton.parentNode.removeChild(oNewButton);
-			try{
-				var aCurrs = document.getElementsByClassName("comment-cur");
-				for(let i=0; i<aCurrs.length; i++) {
-					aCurrs[i].classList.remove("comment-cur");
-				}
-			} catch (err) {
+			// try{
+				// var aCurrs = document.getElementsByClassName("comment-cur");
+				// for(let i=0; i<aCurrs.length; i++) {
+					// aCurrs[i].classList.remove("comment-cur");
+				// }
+			// } catch (err) {
 				
-		}
+			// }
 		}
 		
 	} else {
