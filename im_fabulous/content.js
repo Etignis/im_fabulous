@@ -34,7 +34,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} .comment.comment-new .comment-content{background: #defdbe}"
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} "
 	}	,
 	
 	bHidePostMinus: {
@@ -59,7 +59,7 @@ var oLocalSettings = {
 	
 	bThemeReverse: {
 		val: true,
-		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top.mini{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444} .comment.comment-current .comment-content{background: #def4c8}"
+		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444} .comment.comment-current .comment-content{background: #def4c8} .comment.comment-new .comment-content{ border-color: #4caf50} "
 	},
 	
 	bNewCommnetOrderBranch: {
@@ -327,7 +327,7 @@ function minimiseLeftPadding() {
 				}				
 			}
 			clearTimeout(oTimerPadding);;
-		}, 50);
+		}, 250);
 	} catch(err){
 		
 	}
