@@ -34,7 +34,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} "
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} .firstCommentButton{margin: .1em;    color: #929aa4;    background: linear-gradient(#fafbfc, #f1f3f5);    padding: .2em .6em .3em;    margin-top: 1em;    border-radius: 5px;    border: 1px solid #d0d1d2;    outline: none;    cursor: pointer;     transition: background .3s, color .2s;} .firstCommentButton:hover{    color: #cfefff;     background: linear-gradient(#4cc3ff, #35bdfe);}"
 	}	,
 	
 	bHidePostMinus: {
@@ -198,7 +198,7 @@ function getMyId(){
 	if(sMyUsername == sProfName) {
 		var oVoter = doqument.querySelector("#content .vote-topic");
 		var sId = oVoter.getAttribute("Id");
-		var oId = sId.match("/vote_area_user_(\d+)/");
+		var oId = sId.match(/vote_area_user_(\d+)/);
 		if(oId && oId[1]) {
 			return oId[1];
 		} else {			
@@ -225,7 +225,7 @@ var isInViewport = function (elem) {
 	try{
 		var bounding = elem.getBoundingClientRect();
 		return (
-				bounding.top <= window.innerHeight-200
+				bounding.top <= window.innerHeight-200 && bounding.top > 0
 		);
 	} catch (err) {
 		console.dir(err);
@@ -317,12 +317,12 @@ function minimiseLeftPadding() {
 		clearTimeout(oTimerPadding);
 		oTimerPadding = setTimeout(function(){			
 			if(/comment\d/.test(window.location.hash) && bChange){
-				var oId = window.location.hash.match(/comments(\d+)/i);
+				var oId = window.location.hash.match(/comment(\d+)/i);
 				if(oId && oId[1]) {
 					var oEl = document.getElementById("comment_content_id_"+oId[1]);
 					if(oEl && !isInViewport(oEl)) {
 						oLocalParameters.bScrollActive = false;
-						scrollToComment();
+						scrollToComment(null, null, true, true);
 					}
 				}				
 			}
@@ -335,7 +335,7 @@ function minimiseLeftPadding() {
 
 	
 // Прокрутка к комментарию
-function scrollToComment (idComment, bRemoveNewnest, bShowFromUrl) {
+function scrollToComment (idComment, bRemoveNewnest, bShowFromUrl, bFromPadding) {
 	
 		var bAuto = false;
 		if(bShowFromUrl){
@@ -397,6 +397,12 @@ function scrollToComment (idComment, bRemoveNewnest, bShowFromUrl) {
 		});
 		oLocalParameters.bScrollActive = false;
 		
+		if(bFromPadding) {
+			setTimeout(function(){
+				removeHash();
+			}, 1000);
+		}
+		
 		var oProm = new Promise(function(resolve, reject) {
 			if(element.classList && bRemoveNewnest){
 				setTimeout(function(){element.classList.remove("comment-new"); resolve()}, 500);
@@ -407,6 +413,22 @@ function scrollToComment (idComment, bRemoveNewnest, bShowFromUrl) {
 		return oProm;
 		
 };
+function removeHash () { 
+    var scrollV, scrollH, loc = window.location;
+    if ("pushState" in history)
+        history.pushState("", document.title, loc.pathname + loc.search);
+    else {
+        // Prevent scrolling by storing the page's current scroll offset
+        scrollV = document.body.scrollTop;
+        scrollH = document.body.scrollLeft;
+
+        loc.hash = "";
+
+        // Restore the scroll offset, should be flicker free
+        document.body.scrollTop = scrollV;
+        document.body.scrollLeft = scrollH;
+    }
+}
 function getCoords(elem) { // кроме IE8-
   var box = elem.getBoundingClientRect();
 
@@ -452,8 +474,6 @@ function setCommentsTree(){
 									aComments[k].parentNode.classList.add("backgroundCommentGap");
 									
 									const style = getComputedStyle(document.getElementById(sRootId));
-									//const style = getComputedStyle(oCommentWrappers[i]);
-					//if(style['padding-left'].replace(/[^\d]/g,"")>10){
 									
 									var nPadding = 1;
 									if(oComData[sRootId]) {
@@ -603,7 +623,7 @@ function setNewCommentsCounterHandler(bActive){
 			//reorderNewCommentsByBranches();
 		}
 			redefineNewxtCommentButton();
-
+			defineGoToFirstCommentButton();
 	}	
 }
 
@@ -615,7 +635,8 @@ function handleNewCommentsCount(mutationsList, observer){
 	) {
 		clearTimeout(oTimerNewComments);
 		oTimerNewComments = setTimeout(function(){
-			redefineNewxtCommentButton();
+			redefineNewxtCommentButton();			
+			defineGoToFirstCommentButton();
 			clearTimeout(oTimerNewComments);
 		}, 100);
 	}
@@ -639,6 +660,7 @@ function redefineNewxtCommentButton(){
 			oOldButton.parentNode.appendChild(oNewButton);
 			oNewButton.onclick = goToNextNewComment;
 		}
+		
 		oNewButton.innerHTML = nNewComs;
 		if(nNewComs == 0) {
 			oOldButton.parentNode.removeChild(oNewButton);
@@ -657,44 +679,94 @@ function redefineNewxtCommentButton(){
 			oOldButton.parentNode.removeChild(oNewButton);
 		}
 	}
+	
 }
-function goToNextNewComment() {
+function defineGoToFirstCommentButton(){
+	var oOldButton = document.getElementById("new_comments_counter");
+	var oFirstCommentButton = document.getElementById("first_comment_button");
+	if(oOldButton && oLocalSettings.bHideCommentLeftPadding.val) {
+		let aNewComments = document.getElementsByClassName("comment-new");
+		let nNewComments = document.getElementById("new_comments_counter").innerText;
+		let nNewComs =  aNewComments.length;
+		
+		if(!oFirstCommentButton){
+			oFirstCommentButton = document.createElement('button');
+			oFirstCommentButton.setAttribute("id", "first_comment_button");
+			oFirstCommentButton.setAttribute("class", "firstCommentButton");
+			oFirstCommentButton.setAttribute("title", "Перейти к первому/выбранному комментарию");
+			oFirstCommentButton.innerHTML ="§";
+			oFirstCommentButton.addEventListener('click', function(){
+					goToNextNewComment(false);
+			});
+			oOldButton.parentNode.appendChild(oFirstCommentButton);
+
+		}
+		
+		if(nNewComs == 0 && !/comment\d+/.test(location.hash) && !document.getElementsByClassName("comment-cur")) {
+			oOldButton.parentNode.removeChild(oFirstCommentButton);
+		}
+		
+	} else {
+		if(oFirstCommentButton) {
+			oOldButton.parentNode.removeChild(oFirstCommentButton);
+		}
+	}
+}
+
+function goToNextNewComment(bFull) {
 	var oButton = document.getElementById("new_comments_counter");
 	var aNewComments = document.getElementsByClassName("comment-new");
-	/*if(oLocalParameters.latestNewCommentId && aNewComments && aNewComments.length>0) {
-		aNewComments[0].classList.remove("comment-new");
-		aNewComments = document.getElementsByClassName("comment-new");
-	}*/
+
 	if(aNewComments.length>0) {
 		var sId = aNewComments[0].getAttribute("id");
 		var oId = sId.match(/comment_id_(\d+)/);
 		if(oId && oId[1]) {			
 			oLocalParameters.latestNewCommentId = oId[1];
 			var oWait = scrollToComment(oId[1], true);
-			if(history.pushState) {
-				history.pushState(null, null, "#comment"+oId[1]);
+			if(bFull !== false){
+				if(history.pushState) {
+					history.pushState(null, null, "#comment"+oId[1]);
+				}
+				else {
+					location.hash = "#comment"+oId[1];
+				}
+				//window.location.hash = "#comment"+oId[1];
+				oWait.then(function(){
+					setTimeout(function(){
+						redefineNewxtCommentButton();
+					}, 100);
+				});
 			}
-			else {
-				location.hash = "#comment"+oId[1];
-			}
-			//window.location.hash = "#comment"+oId[1];
-			oWait.then(function(){
-				setTimeout(function(){
-					redefineNewxtCommentButton();
-				}, 100);
-			});
 			
 		}
 	} else {
-		try{
-			var aCurrs = document.getElementsByClassName("comment-cur");
-			for(let i=0; i<aCurrs.length; i++) {
-				aCurrs[i].classList.remove("comment-cur");
+		if(bFull !== false) {
+			try{
+				var aCurrs = document.getElementsByClassName("comment-cur");
+				for(let i=0; i<aCurrs.length; i++) {
+					aCurrs[i].classList.remove("comment-cur");
+				}
+			} catch (err) {
+				
 			}
-		} catch (err) {
-			
+			redefineNewxtCommentButton();
+		} else {
+			var oId = window.location.hash.match(/comment(\d+)/i);
+			// comment comment-cur
+			var aCurrs = document.getElementsByClassName("comment-cur");
+			if(aCurrs && aCurrs[0]) {
+				var sId = aCurrs[0].getAttribute("Id");
+				var oId2 = sId.match(/comment_id_(\d+)/);				
+			}
+			let sNormId = oId && oId[1] || oId2 && oId2[1];
+			if(sNormId) {
+				var oEl = document.getElementById("comment_content_id_"+sNormId);
+				if(oEl && !isInViewport(oEl)) {
+					oLocalParameters.bScrollActive = false;
+					scrollToComment(sNormId, true);
+				}
+			}				
 		}
-		redefineNewxtCommentButton();
 	}
 	return false;
 }
