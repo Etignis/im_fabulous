@@ -49,7 +49,7 @@ var oLocalSettings = {
 	
 	bCommentWidth: {
 		val: false,
-		css: ".reply, .comment{max-width: 700px}"
+		css: ".reply, .comment{width: 700px}"
 	},
 	
 	bOwnCarma: {
