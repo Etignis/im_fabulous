@@ -183,7 +183,7 @@ function pressThemeReverse (oEvent){
 function pressSimpleTitle (oEvent){
 	var bVal = oSimpleTitleCheckbox.checked;
 	
-	alert(bVal);
+	//alert(bVal);
 	API.runtime.sendMessage({
 		bHideSiteTitle: bVal
 	});
@@ -191,7 +191,7 @@ function pressSimpleTitle (oEvent){
 function pressSimpleOnair (oEvent){
 	var bVal = oSimpleOnairCheckbox.checked;
 	
-	alert(bVal);
+	//alert(bVal);
 	API.runtime.sendMessage({
 		bSimpleOnAir: bVal
 	});
