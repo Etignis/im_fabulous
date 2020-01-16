@@ -34,7 +34,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} .firstCommentButton{margin: .1em;    color: #929aa4;    background: linear-gradient(#fafbfc, #f1f3f5);    padding: .2em .6em .3em;    margin-top: 1em;    border-radius: 5px;    border: 1px solid #d0d1d2;    outline: none;    cursor: pointer;     transition: background .3s, color .2s;} .firstCommentButton:hover{    color: #cfefff;     background: linear-gradient(#4cc3ff, #35bdfe);}"
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content .text{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} .firstCommentButton{margin: .1em;    color: #929aa4;    background: linear-gradient(#fafbfc, #f1f3f5);    padding: .2em .6em .3em;    margin-top: 1em;    border-radius: 5px;    border: 1px solid #d0d1d2;    outline: none;    cursor: pointer;     transition: background .3s, color .2s;} .firstCommentButton:hover{    color: #cfefff;     background: linear-gradient(#4cc3ff, #35bdfe);}"
 	}	,
 	
 	bHidePostMinus: {
@@ -59,12 +59,22 @@ var oLocalSettings = {
 	
 	bThemeReverse: {
 		val: true,
-		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444} .comment.comment-current .comment-content{background: #def4c8} .comment.comment-new .comment-content{ border-color: #4caf50} "
+		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444} .comment.comment-current .comment-content{background: #def4c8} .comment.comment-new .comment-content{ border-color: #4caf50} .content_bg{background: none !important} .text{padding: 0 3px} .comment{border-radius: 5px;}"
 	},
 	
 	bNewCommnetOrderBranch: {
 		val: false,
 		css: "#new_comments_counter{display: none !important}"
+	},
+	
+	bHideSiteTitle: {
+		val: false,
+		css: "header#header > div.container:first-child{display: none !important;}"
+	},
+	
+	bSimpleOnAir: {
+		val: false,
+		css: ".block.block-type-stream .block-content .latest-list .stream-topic{text-decoration: none !important; font-weight: normal !important;}"
 	}
 };
 var oTimer, oTimerPadding, oTimerNewComments;

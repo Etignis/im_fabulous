@@ -1,7 +1,12 @@
-{
+{  "applications": {
+    "gecko": {
+      "id": "mail@youknowwho.ru",
+      "strict_min_version": "60.0"
+    }
+  },
   "manifest_version": 2,
   "name": "Имажинария | Интерфейс",
-  "version": "1.1.4.1",
+  "version": "1.1.4.3",
 	
 	"description": "Позволяет настраивать внешний вид некоторых элементов сайта.",
 	

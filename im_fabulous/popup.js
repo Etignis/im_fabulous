@@ -45,12 +45,20 @@ oCommentMidthCheckbox.onchange = pressCommentWidth;
 var oOwnCarmaCheckbox = document.getElementById("toggle_own_carma");
 oOwnCarmaCheckbox.onchange = pressOwnCarma;
 
-// own carma
+// reverse 
 var oThemeRevarseCheckbox = document.getElementById("toggle_theme_reverse");
 oThemeRevarseCheckbox.onchange = pressThemeReverse;
-// own carma
+// comment order
 var oNewCommentOrderCheckbox = document.getElementById("toggle_new_comments_order");
 oNewCommentOrderCheckbox.onchange = pressNewCommentOrder;
+
+// simple title 
+var oSimpleTitleCheckbox = document.getElementById("toggle_site_title");
+oSimpleTitleCheckbox.onchange = pressSimpleTitle;
+
+// simple onair 
+var oSimpleOnairCheckbox = document.getElementById("toggle_simple_onair");
+oSimpleOnairCheckbox.onchange = pressSimpleOnair;
 
 
 function showInfo() {
@@ -172,6 +180,23 @@ function pressThemeReverse (oEvent){
 	/**/
 }
 
+function pressSimpleTitle (oEvent){
+	var bVal = oSimpleTitleCheckbox.checked;
+	
+	alert(bVal);
+	API.runtime.sendMessage({
+		bHideSiteTitle: bVal
+	});
+}	
+function pressSimpleOnair (oEvent){
+	var bVal = oSimpleOnairCheckbox.checked;
+	
+	alert(bVal);
+	API.runtime.sendMessage({
+		bSimpleOnAir: bVal
+	});
+}	
+
 var aParamNames = [
 	'bHideCommentPlus', 
 	'bHideCommentMinus', 
@@ -185,7 +210,9 @@ var aParamNames = [
 	'bCommentWidth', 
 	'bOwnCarma',
 	'bThemeReverse',
-	'bNewCommnetOrderBranch'
+	'bNewCommnetOrderBranch',
+	'bHideSiteTitle',
+	'bSimpleOnAir'
 ];
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
@@ -213,4 +240,6 @@ oSettingsPropmise.then(function(oSettings){
 	oOwnCarmaCheckbox.checked = oSettings.bOwnCarma || false;
 	oThemeRevarseCheckbox.checked = oSettings.bThemeReverse || false;
 	oNewCommentOrderCheckbox.checked = oSettings.bNewCommnetOrderBranch || false;
+	oSimpleTitleCheckbox.checked = oSettings.bHideSiteTitle || false;
+	oSimpleOnairCheckbox.checked = oSettings.bSimpleOnAir || false;
 });

@@ -13,7 +13,9 @@ var aParamNames = [
 	'bCommentWidth', 
 	'bOwnCarma',
 	'bThemeReverse',
-	'bNewCommnetOrderBranch'
+	'bNewCommnetOrderBranch',
+	'bHideSiteTitle',
+	'bSimpleOnAir'
 ];
 
 API.runtime.onMessage.addListener(function(request, sender, sendResponse) {
