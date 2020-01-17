@@ -1,11 +1,51 @@
 const API = (window.navigator.vendor=="Google Inc.")? chrome : browser;
 
+/*/
+var aParamNames = [
+	'bHideCommentPlus', 
+	'bHideCommentMinus', 
+	'bHideCommentNegative', 
+	'bHideCommentResult', 
+	'bHidePostMinus', 
+	'bHidePostNegative', 
+	'bHideCommentSidebar', 
+	'bShowCommentsTree', 
+	'bHideCommentLeftPadding', 
+	'bCommentWidth', 
+	'bOwnCarma',
+	'bThemeReverse',
+	'bNewCommnetOrderBranch',
+	'bHideSiteTitle',
+	'bSimpleOnAir',
+	'bNewComments'
+];
+/**/
+var aParamNames = [];
+var aInputs = document.querySelectorAll("#options input");
+aInputs.forEach(function(oEl) {
+	let sParam = oEl.dataset.param;
+	aParamNames.push(sParam);
+	oEl.onclick = inputPress;
+});
+
+function inputPress(){
+	var sParam = this.dataset.param;
+	var bVal = this.checked; 
+	
+	var o= {};
+	o[sParam] = bVal;
+	//o.val = bVal;
+	
+	API.runtime.sendMessage(o);
+}
+
 // show info
 var oShowInfo = document.getElementById("showInfo");
 oShowInfo.onclick = showInfo;
 // hide info
 var oHideInfo = document.getElementById("hideInfo");
 oHideInfo.onclick = hideInfo;
+/*/
 
 // hide comment +
 var oCommentPlusCheckbox = document.getElementById("toggle_comment_plus");
@@ -60,6 +100,10 @@ oSimpleTitleCheckbox.onchange = pressSimpleTitle;
 var oSimpleOnairCheckbox = document.getElementById("toggle_simple_onair");
 oSimpleOnairCheckbox.onchange = pressSimpleOnair;
 
+// new comments
+var oNewCommentsCheckbox = document.getElementById("toggle_new_comments");
+oNewCommentsCheckbox.onchange = pressNewComments;
+/**/
 
 function showInfo() {
 	document.getElementById("options").style.display = "none";
@@ -72,6 +116,7 @@ function hideInfo() {
 	return false;
 }
 
+/*/
 function pressCommentPlus (oEvent){
 	var bCommentPlusCheckboxVal = oCommentPlusCheckbox.checked;
 	API.runtime.sendMessage({
@@ -171,13 +216,7 @@ function pressThemeReverse (oEvent){
 	API.runtime.sendMessage({
 		bThemeReverse: bVal
 	});
-	/*/
-	if(bVal) {
-		document.body.classList.add("reverse");
-	} else {
-		document.body.classList.remove("reverse");
-	}
-	/**/
+
 }
 
 function pressSimpleTitle (oEvent){
@@ -196,24 +235,15 @@ function pressSimpleOnair (oEvent){
 		bSimpleOnAir: bVal
 	});
 }	
-
-var aParamNames = [
-	'bHideCommentPlus', 
-	'bHideCommentMinus', 
-	'bHideCommentNegative', 
-	'bHideCommentResult', 
-	'bHidePostMinus', 
-	'bHidePostNegative', 
-	'bHideCommentSidebar', 
-	'bShowCommentsTree', 
-	'bHideCommentLeftPadding', 
-	'bCommentWidth', 
-	'bOwnCarma',
-	'bThemeReverse',
-	'bNewCommnetOrderBranch',
-	'bHideSiteTitle',
-	'bSimpleOnAir'
-];
+function pressNewComments (oEvent){
+	var bVal = oNewCommentsCheckbox.checked;
+	
+	//alert(bVal);
+	API.runtime.sendMessage({
+		bNewComments: bVal
+	});
+}	
+/**/
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
 	API.storage.sync.get(aParamNames, function(result) {	
@@ -227,6 +257,11 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 })
 
 oSettingsPropmise.then(function(oSettings){
+	aInputs.forEach(function(oEl) {
+		let sParam = oEl.dataset.param;
+		oEl.checked = oSettings[sParam] || false;
+	});
+	/*/
 	oCommentPlusCheckbox.checked = oSettings.bHideCommentPlus || false;
 	oCommentMinusCheckbox.checked = oSettings.bHideCommentMinus || false;
 	oCommentNegativeCheckbox.checked = oSettings.bHideCommentNegative || false;
@@ -242,4 +277,6 @@ oSettingsPropmise.then(function(oSettings){
 	oNewCommentOrderCheckbox.checked = oSettings.bNewCommnetOrderBranch || false;
 	oSimpleTitleCheckbox.checked = oSettings.bHideSiteTitle || false;
 	oSimpleOnairCheckbox.checked = oSettings.bSimpleOnAir || false;
+	oNewCommentsCheckbox.checked = oSettings.bNewComments || false;
+	/**/
 });

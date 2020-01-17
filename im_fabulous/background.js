@@ -15,7 +15,8 @@ var aParamNames = [
 	'bThemeReverse',
 	'bNewCommnetOrderBranch',
 	'bHideSiteTitle',
-	'bSimpleOnAir'
+	'bSimpleOnAir',
+	'bNewComments'
 ];
 
 API.runtime.onMessage.addListener(function(request, sender, sendResponse) {

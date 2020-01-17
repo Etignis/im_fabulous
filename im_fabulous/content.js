@@ -75,6 +75,12 @@ var oLocalSettings = {
 	bSimpleOnAir: {
 		val: false,
 		css: ".block.block-type-stream .block-content .latest-list .stream-topic{text-decoration: none !important; font-weight: normal !important;}"
+	},
+	
+	
+	bNewComments: {
+		val: false,
+		css: ".comment.comment-new .comment-content {background: #83d40036}"
 	}
 };
 var oTimer, oTimerPadding, oTimerNewComments;
