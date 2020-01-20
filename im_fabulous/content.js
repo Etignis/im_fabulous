@@ -34,7 +34,7 @@ var oLocalSettings = {
 	
 	bHideCommentLeftPadding: {
 		val: false,
-		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content .text{box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} .firstCommentButton{margin: .1em;    color: #929aa4;    background: linear-gradient(#fafbfc, #f1f3f5);    padding: .2em .6em .3em;    margin-top: 1em;    border-radius: 5px;    border: 1px solid #d0d1d2;    outline: none;    cursor: pointer;     transition: background .3s, color .2s;} .firstCommentButton:hover{    color: #cfefff;     background: linear-gradient(#4cc3ff, #35bdfe);}"
+		css: ".comment-wrapper{transition: padding-left 0.4s; } .hideCommentLeftPadding{padding-left: 5px !important;} .backgroundCommentGap{background-image: linear-gradient(90deg, #ffffff 43%, #e0e0e0c7 43.5%, #f0f6fa 43.6%, #ffffff 46.7%, #ffffff 98.08%, #f0f6fa 98.08%, #f0f6fa 100%);     background-size: 90.00px 100.00px;     background-repeat-x: no-repeat;} .comment-cur .comment-content {box-shadow: 0 0 1px 3px #8BC34A !important;} .comments, .comment, .comment-content{transition: background .8s, border-color .8s, box-shadow .6s} .firstCommentButton{margin: .1em;    color: #929aa4;    background: linear-gradient(#fafbfc, #f1f3f5);    padding: .2em .6em .3em;    margin-top: 1em;    border-radius: 5px;    border: 1px solid #d0d1d2;    outline: none;    cursor: pointer;     transition: background .3s, color .2s;} .firstCommentButton:hover{    color: #cfefff;     background: linear-gradient(#4cc3ff, #35bdfe);}"
 	}	,
 	
 	bHidePostMinus: {
@@ -49,7 +49,7 @@ var oLocalSettings = {
 	
 	bCommentWidth: {
 		val: false,
-		css: ".reply, .comment{width: 700px}"
+		css: ".reply, .comment{max-width: 700px}"
 	},
 	
 	bOwnCarma: {
@@ -67,10 +67,10 @@ var oLocalSettings = {
 		css: "#new_comments_counter{display: none !important}"
 	},
 	
-	bHideSiteTitle: {
-		val: false,
-		css: "header#header > div.container:first-child{display: none !important;}"
-	},
+	// bHideSiteTitle: {
+		// val: false,
+		// css: "header#header > div.container:first-child{display: none !important;}"
+	// },
 	
 	bSimpleOnAir: {
 		val: false,
