@@ -280,3 +280,12 @@ oSettingsPropmise.then(function(oSettings){
 	oNewCommentsCheckbox.checked = oSettings.bNewComments || false;
 	/**/
 });
+
+// version
+var manifestData = chrome.runtime.getManifest();
+var nVersion = manifestData.version;
+
+var oNode = document.querySelector("#ext_version");
+if(oNode) {
+	oNode.innerText = nVersion;
+}
