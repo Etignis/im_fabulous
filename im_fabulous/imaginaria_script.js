@@ -86,7 +86,7 @@ var oLocalSettings = {
 	}
 };
 
-var aFormData: [
+var aFormData = [
 	{
 		inputs: [
 			{
@@ -169,6 +169,92 @@ var aFormData: [
 	}
 ];
 
+var sPanelStyle = `#extra_options{
+				font-family: Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+				background: #fbfcfc;
+			}
+			#extra_options h1{
+				font-size: 18px;
+				line-height: 1.1em;
+				font-weight: normal;
+				margin: 0 0 10px;
+				font-family: 'PT Sans', Arial, sans-serif;
+			}
+			#extra_options hr{
+				border: none;
+				border-top: 1px solid #e7ebed;
+			}
+			#extra_options label{
+				display: block;
+				cursor: pointer;
+				transition: background .3s, box-shadow .3s;
+				padding: 2px 2px 3px;
+				color: #444;
+				margin: 3px 0;
+				border-radius: 3px;
+				position: relative;
+			}
+			#extra_options label:hover{
+				background: #fff;
+				box-shadow: 0 1px 4px 0 #00000030;
+			}
+			
+			#extra_options input[type="checkbox"]{
+				display: none;
+			}
+			#extra_options input[type="checkbox"] + label{
+				padding-left: 23px;
+			}
+			#extra_options input[type="checkbox"] + label::before{
+				content: "";
+				position: absolute;
+				top: calc(50% - 7px);
+				left: 2px;
+				width: 10px;
+				height: 10px;
+				border: 3px solid #ddd;
+				border-radius: 3px;
+				box-shadow: inset 0 0 0 1px #fff;
+				transition: background .2s, border .3s;
+			}
+			#extra_options input[type="checkbox"]:checked + label::before{
+				background: #275ec2;
+			}
+			#extra_options input[type="checkbox"] + label:hover::before{
+				border-color: #bbb;
+			}
+			
+			#extra_options .reverse{
+				filter: invert(0.9) hue-rotate(190deg);
+				background: #222;
+			}
+			
+			#extra_options #showInfo, 
+			#extra_options #hideInfo{
+				cursor: pointer;
+				color: #888;
+				text-decoration: none;
+				display: block;
+				width: 1.5em;
+				height: 1.5em;
+				text-align: center;
+				border-radius: 3px;
+				background: #eee;
+				transition: background .3s, color .3s;
+			}
+			#extra_options #showInfo:hover, 
+			#extra_options #hideInfo:hover{
+				color: #222;
+				background: #ddd;
+			}
+			#extra_options #ext_version{
+				position: absolute;
+				bottom: 3px;
+				right: 3px;
+				color: silver;
+				
+			}`;
+
 var oTimer, oTimerPadding, oTimerNewComments;
 var oLocalParameters = {
 	bScrollActive: false
@@ -182,6 +268,7 @@ window.onload = function(){
 	setNewCommentsCounterHandler(); 
 	setCommentsTree();
 	scrollToComment(null, null, true);
+	createSettingsPanel();
 	}
 	
 	
@@ -272,6 +359,26 @@ oSettingsPropmise.then(implementSettings);
 	// }
 // });
 
+// settings panel styles
+
+function createPanelStyles(){
+	function addStyle(styles) { 
+				
+			/* Create style element */ 
+			var css = document.createElement('style'); 
+			css.type = 'text/css'; 
+ 
+			if (css.styleSheet)  
+					css.styleSheet.cssText = styles; 
+			else  
+					css.appendChild(document.createTextNode(styles)); 
+				
+			/* Append style to the head element */ 
+			document.getElementsByTagName("head")[0].appendChild(css); 
+	} 
+
+	addStyle(sPanelStyle)
+}
 
 function inputPress(){
 	var sParam = this.dataset.param;
@@ -293,7 +400,7 @@ function createSettingsPanel() {
 	try{
 		let sUser = document.querySelector("#dropdown-user .username").innerText;
 		let bPage = window.location.pathname == "/settings/profile/";
-		if(bPage && sUser){
+		if(bPage && (sUser == 'shadeofsky' || sUser == 'Вомбат')){
 			//let sForm = "";
 			//let aGroups = [];
 			let oPanel = document.createElement('div');
@@ -307,17 +414,17 @@ function createSettingsPanel() {
 					let sLabel = oInput.label;
 					//let sInput = `<input type="checkbox" data-param="${sParam}" id="${sId}"> <label for="${sId}">${sLabel}</label>`;
 					
-					let oInput = document.createElement('input');
-					oInput.type = 'checkbox';
-					oInput.dataset.param = sParam;
-					oInput.id = sId;
-					oInput.onclick = inputPress;
+					let oCheckbox = document.createElement('input');
+					oCheckbox.type = 'checkbox';
+					oCheckbox.dataset.param = sParam;
+					oCheckbox.id = sId;
+					oCheckbox.onclick = inputPress;
 					
 					let oLabel = document.createElement('label');
 					oLabel.setAttribute("for", sId);				
 					oLabel.innerHTML = sLabel;
 					
-					oPanel.appendChild(oInput);
+					oPanel.appendChild(oCheckbox);
 					oPanel.appendChild(oLabel);
 					//aGroup.push(sInput);
 				});
@@ -330,6 +437,7 @@ function createSettingsPanel() {
 			//sForm = `<div id="extra_options">${sForm}</div>`;
 			
 			document.querySelector("#content").appendChild(oPanel);
+			createPanelStyles();
 		}	
 	} catch (err) {
 		
