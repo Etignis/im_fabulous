@@ -3,24 +3,24 @@
 //const API = (window.navigator.vendor=="Google Inc.")? chrome : browser;
 
 // CSS-styles
-
+var nAdaptiveTextSize = 40;
 var oLocalSettings = {
 	bHideCommentPlus: {
-		val: true,
+		val: false,
 		css: ".comment-wrapper .vote-up{display: none !important;}"
 	},
 	bHideCommentMinus: {
-		val: true,
+		val: false,
 		css: ".comment-wrapper .vote-down{display: none !important;}"
 	},
 	
 	bHideCommentResult: {
-		val: true,
+		val: false,
 		css: ".comment-wrapper .vote-count,  .comments .vote-count{display: none !important;}"
 	},
 	
 	bHideCommentNegative: {
-		val: true,
+		val: false,
 		css: ""
 	},
 	
@@ -40,12 +40,12 @@ var oLocalSettings = {
 	}	,
 	
 	bHidePostMinus: {
-		val: true,
+		val: false,
 		css: ".vote-topic .vote-item.vote-down{display: none !important;}"
 	},	
 	
 	bHidePostNegative: {
-		val: true,
+		val: false,
 		css: ""
 	},
 	
@@ -55,12 +55,12 @@ var oLocalSettings = {
 	},
 	
 	bOwnCarma: {
-		val: true,
+		val: false,
 		css: ".dropdown-user-menu .item-stat{display: none} .vote-profile{display: none}"
 	},
 	
 	bThemeReverse: {
-		val: true,
+		val: false,
 		css: "html, body, #container{background: #222} #nav, #wrapper, #footer, aside.toolbar, .to_top{filter: invert(0.9) hue-rotate(190deg);} #nav img, #wrapper img, #footer img, #nav iframe, #wrapper iframe, #footer iframe{filter: invert(1.1) hue-rotate(-190deg);} .text{color: #444} .comment.comment-current .comment-content{background: #def4c8} .comment.comment-new .comment-content{ border-color: #4caf50} .content_bg{background: none !important} .text{padding: 0 3px} .comment{border-radius: 5px;}"
 	},
 	
@@ -77,12 +77,69 @@ var oLocalSettings = {
 	bSimpleOnAir: {
 		val: false,
 		css: ".block.block-type-stream .block-content .latest-list .stream-topic{text-decoration: none !important; font-weight: normal !important;}"
-	},
-	
+	},	
 	
 	bNewComments: {
 		val: false,
 		css: ".comment.comment-new .comment-content {background: #83d40036}"
+	},	
+	
+	bAdaptive: {
+		val: false,
+		css: `@media only screen and (max-width: 1000px) {
+	.comment-content  .text,
+	.topic-content.text{
+		font-size: ${nAdaptiveTextSize}px;
+	} 
+	.topic .topic-header .topic-title{
+		font-size: ${nAdaptiveTextSize*2}px
+	} 
+	.topic .topic-header .topic-info .topic-blog{
+		font-size: ${nAdaptiveTextSize}px
+	} 
+	.topic .topic-footer .topic-info{
+		display: flex;
+		flex-wrap: wrap;
+		font-size: ${nAdaptiveTextSize}px;
+	}
+	.topic .topic-footer .topic-tags{
+		font-size: ${nAdaptiveTextSize}px;
+		line-height: ${nAdaptiveTextSize*1.5}px;
+		margin-bottom: 1em;
+	}
+	.topic .topic-footer .topic-info li.topic-info-vote,
+	.topic .topic-footer .topic-info li{
+		margin-right: 1em;
+    margin-bottom: 1em;
+	}
+	.topic .topic-footer .topic-info li.topic-info-vote{
+		transform: scale(2);
+		margin: .3em 1em;
+	}
+	.topic .topic-footer .topic-info li.complaint-layer{
+		transform: scale(2);
+    margin: .3em 2em;
+	}
+	.comment .comment-info{
+		font-size: ${~~(nAdaptiveTextSize*0.7)}px; 
+		display: flex; 
+		flex-wrap: wrap;
+		overflow: visible;
+		padding-right: 100px;
+	} 
+	.comment .comment-info li{
+		height: auto;
+		margin-bottom: .6em;
+		margin-right: 1em;
+	}
+	.comment .comment-info li.vote .vote-up{
+		transform: scale(4); 
+		margin-left: 30px
+	} 
+	.comment .comment-info li a.link-dotted{		
+		display: block;
+	}
+}`
 	}
 };
 
@@ -123,7 +180,7 @@ var aFormData = [
 		inputs: [
 			{
 				key: "bOwnCarma",
-				label: "сскрыть карму (β)"
+				label: "скрыть карму (β)"
 			}
 		]
 	}, 
@@ -147,7 +204,11 @@ var aFormData = [
 			},
 			{
 				key: "bNewCommnetOrderBranch",
-				label: "сортирвать новые комменты по <acronym title='Не в порядке появления коммента, а по веткам обсуждания'>веткам</acronym> (β)"
+				label: "сортирвать новые комментарии по <acronym title='Не в порядке появления коммента, а по веткам обсуждания'>веткам</acronym> (β)"
+			},
+			{
+				key: "bNewComments",
+				label: "Подсвечивать непрочитанные комментарии"
 			}
 		]
 	}, 
@@ -162,8 +223,8 @@ var aFormData = [
 				// label: "Упростить \"Прямой эфир\""
 			// },
 			{
-				key: "bNewComments",
-				label: "Подсвечивать непрочитанные комментарии"
+				key: "bAdaptive",
+				label: "Адаптировать под телефон (β)"
 			}
 		]
 	}
@@ -172,6 +233,17 @@ var aFormData = [
 var sPanelStyle = `#extra_options{
 				font-family: Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
 				background: #fbfcfc;
+				padding: 1em .5em;
+			}
+			#extra_options::before{
+				content: "Дополнительные настройки отображения (β-тест):";
+				display: block;
+				font-size: 110%;
+				margin: .2em;
+			}
+			#extra_options .info{
+				margin: .6em .2em;
+				color: #98aacd;
 			}
 			#extra_options h1{
 				font-size: 18px;
@@ -193,10 +265,12 @@ var sPanelStyle = `#extra_options{
 				margin: 3px 0;
 				border-radius: 3px;
 				position: relative;
+				transition: background .2s;
 			}
 			#extra_options label:hover{
 				background: #fff;
-				box-shadow: 0 1px 4px 0 #00000030;
+				background: linear-gradient(to right, #275ec22e, #fff0);
+				/*box-shadow: 0 1px 4px 0 #00000030;*/
 			}
 			
 			#extra_options input[type="checkbox"]{
@@ -276,7 +350,8 @@ function implementSettings(oSettings){
 	var aStyle = [];
 
 	for(var key in oSettings) {
-		oLocalSettings[key].val = oSettings[key].val || false;
+		let sVal = oSettings[key].val || false;
+		oLocalSettings[key].val = sVal;
 	}
 	for(var key in oLocalSettings) {
 		if(oLocalSettings[key].val && oLocalSettings[key].css) {
@@ -321,7 +396,7 @@ function implementSettings(oSettings){
 	
 }	
 
-implementSettings(0);
+//implementSettings(oLocalSettings);
 startStalkScroll(true);
 
 var oSettingsPropmise = new Promise (function(resolve, reject){
@@ -341,8 +416,14 @@ var oSettingsPropmise = new Promise (function(resolve, reject){
 	
 	console.log('settings: ');
 	aNames.forEach(function(sKey){
-		console.dir(sKey);
-		oLocalSettings[key].val = localStorage.getItem(sKey) || false;
+		let sValue = localStorage.getItem(sKey) == "true";
+		console.log(sKey, sValue);
+		oLocalSettings[sKey].val = sValue || false;
+		// set checkboxes
+		let oCheckbox = document.querySelector("#toggle_"+sKey);
+		if(oCheckbox) {
+			oCheckbox.checked = sValue;
+		}
 	});
 	resolve(oLocalSettings);
 }) 
@@ -385,9 +466,11 @@ function inputPress(){
 	var bVal = this.checked; 
 	
 	var o= {};
-	o[sParam] = bVal;
+	o[sParam] = {val: bVal};
 	
 	//API.runtime.sendMessage(o);
+	
+	localStorage.setItem(sParam, bVal);
 	
 	if(oLocalSettings[sParam] != undefined) {
 		implementSettings(o);
@@ -397,14 +480,24 @@ function inputPress(){
 // create settings panel
 
 function createSettingsPanel() {
+	let aWhiteUsers = [
+		'shadeofsky',
+		'Вомбат',
+		'Firkraag'
+	];
 	try{
 		let sUser = document.querySelector("#dropdown-user .username").innerText;
-		let bPage = window.location.pathname == "/settings/profile/";
-		if(bPage && (sUser == 'shadeofsky' || sUser == 'Вомбат')){
+		let bPage = window.location.pathname == "/settings/profile/" || window.location.pathname == "/settings/";
+		if(bPage && aWhiteUsers.includes(sUser)){
 			//let sForm = "";
 			//let aGroups = [];
 			let oPanel = document.createElement('div');
 			oPanel.id = 'extra_options';
+			
+			let oInfo = document.createElement('div');
+			oInfo.classList.add("info");
+			oInfo.innerHTML = 'Настройки вступают в силу сразу после нажатия на опцию, кнопку [Сохранить] нажимать не надо. Дополнительные настройки сохраняются для каждого браузера/устройства отдельно. Если вы заходите на Имажинарю и с компьютера, и с телефона, потребуется задать настройки и там, и там.<br>Вопросы/предложения принимает <a href="https://imaginaria.ru/talk/add/?talk_users=shadeofsky">shadeofsky</a>';
+			oPanel.appendChild(oInfo);
 			
 			aFormData.forEach(function(oGroup){
 				//let aGroup = [];
@@ -419,6 +512,8 @@ function createSettingsPanel() {
 					oCheckbox.dataset.param = sParam;
 					oCheckbox.id = sId;
 					oCheckbox.onclick = inputPress;
+					oCheckbox.checked = oLocalSettings[sParam].val;
+					
 					
 					let oLabel = document.createElement('label');
 					oLabel.setAttribute("for", sId);				
@@ -495,8 +590,12 @@ var isInViewport = function (elem) {
 	}
 	try{
 		var bounding = elem.getBoundingClientRect();
+		console.log(`${bounding.top} <= ${window.innerHeight-200} && ${bounding.bottom}>0`);
 		return (
-				bounding.top <= window.innerHeight-200 && bounding.top > 0
+				// bounding.top <= window.innerHeight-200 && bounding.top < 0
+				
+				bounding.top <= window.innerHeight-200 && bounding.bottom>0
+				
 		);
 	} catch (err) {
 		console.dir(err);
@@ -737,8 +836,8 @@ function setCommentsTree(){
 								var sRootId = "comment_wrapper_id_"+oLink[1];
 								
 								if(document.getElementById(sRootId).parentNode == oCurrentNode.parentNode){
-									console.log(document.getElementById(sRootId).parentNode.getAttribute('id'));
-									console.log(oCurrentNode.parentNode.getAttribute('id'));
+									//console.log(document.getElementById(sRootId).parentNode.getAttribute('id'));
+									//console.log(oCurrentNode.parentNode.getAttribute('id'));
 									
 									// commentBefore
 
@@ -955,7 +1054,7 @@ function redefineNewxtCommentButton(){
 function defineGoToFirstCommentButton(){
 	var oOldButton = document.getElementById("new_comments_counter");
 	var oFirstCommentButton = document.getElementById("first_comment_button");
-	if(oOldButton && oLocalSettings.bHideCommentLeftPadding.val) {
+	if(oOldButton && oLocalSettings.bNewCommnetOrderBranch.val) {
 		let aNewComments = document.getElementsByClassName("comment-new");
 		let nNewComments = document.getElementById("new_comments_counter").innerText;
 		let nNewComs =  aNewComments.length;
